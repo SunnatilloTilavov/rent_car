@@ -12,14 +12,20 @@ func ValidateCarYear(year int) error {
 	}
 	return nil
 }
-func ValidateEmail(gmail string)bool{
+func ValidateEmail(gmail string)error{
 atCount:=strings.Count(gmail,"@")
 dotCount:=strings.Count(gmail,".")
-return atCount==1&&dotCount==1&&(strings.HasSuffix(gmail,"@gmail.com")||strings.HasSuffix(gmail,"@mail.ru") )
+if atCount==1&&dotCount==1&&(strings.HasSuffix(gmail,"@gmail.com")||strings.HasSuffix(gmail,"@mail.ru") ){return nil}else{
+	return errors.New("gmail is not validet")
+}
 }
 
-func ValidatePhone(phone string)bool{
+func ValidatePhone(phone string)error{
 	plusCount:=strings.Count(phone,"+")
-	return plusCount==1&&strings.HasPrefix(phone,"+998")&&len(phone)==13
+	if plusCount==1&&strings.HasPrefix(phone,"+998")&&len(phone)==13{
+		return nil
+	}else{
+		return errors.New("number is not validet")
+	}
 	}
 	

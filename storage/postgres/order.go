@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"clone/rent_car_us/models"
+	"clone/rent_car_us/api/models"
 	"database/sql"
 	"fmt"
 	"clone/rent_car_us/pkg"
@@ -63,7 +63,7 @@ func (o *orderRepo) UpdateOrder(order models.GetOrder) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return order.Customer.Id, nil
+	return order.Id, nil
 }
 
 func (o *orderRepo) GetOne(orderID string) (models.GetOrder, error) {
@@ -119,9 +119,9 @@ func (o *orderRepo) GetAll(req models.GetAllOrdersRequest) (models.GetAllOrdersR
 )	
 offset := (req.Page - 1) * req.Limit
 if req.Search != "" {
-	filter += fmt.Sprintf(`and  status ILIKE '%%%v%%'`, req.Search)
+	filter += fmt.Sprintf(` and  status ILIKE '%%%v%%'`, req.Search)
 }
-filter += fmt.Sprintf("OFFSET %v LIMIT %v", offset, req.Limit)
+filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 fmt.Println("filter:", filter)
 
 	query:=`Select 
@@ -131,8 +131,7 @@ fmt.Println("filter:", filter)
 	o.status,
 	o.paid,
 	o.amount,
-	o.created_at,
-	o.updated_at,
+	o.created_ad,
 	c.name as car_name,
 	c.brand as car_brand,
 	c.engine_cap as car_engine_cap,
@@ -150,13 +149,13 @@ fmt.Println("filter:", filter)
 	defer rows.Close()
 
 	for rows.Next(){
-		var (order = models.GetOrder{
+		var (
+			order = models.GetOrder{
 			Car: models.Car{},
 			Customer: models.Customer{},
 		}
 		 updateAt sql.NullString
-	)
-		
+	)	
 		err := rows.Scan(
 			&order.Id,
 			&order.FromDate,
@@ -165,7 +164,6 @@ fmt.Println("filter:", filter)
 			&order.Paid,
 			&order.Amount,
 			&order.CreatedAt,
-			&updateAt,
 			&order.Car.Name,
 			&order.Car.Brand,
 			&order.Car.EngineCap,
@@ -177,11 +175,12 @@ fmt.Println("filter:", filter)
          return resp,err
 		}
 	  order.UpdatedAt = pkg.NullStringToString(updateAt)
-     resp.Orders = append(resp.Orders, models.GetAllOrders{})
+     resp.Orders = append(resp.Orders, order)
 	}
    if err = rows.Err();err != nil {
 	return resp,err
    }
+   
    countQuery := `SELECT COUNT(*) FROM orders`
 
    err = o.db.QueryRow(countQuery).Scan(&resp.Count)
@@ -190,6 +189,11 @@ fmt.Println("filter:", filter)
 	 }
    return resp,nil
 }
+
+
+
+
+
 
 func (o *orderRepo) DeleteOrder(id string) error {
 	err := uuid.Validate(id)

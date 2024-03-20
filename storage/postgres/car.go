@@ -2,7 +2,7 @@ package postgres
 
 
 import (
-	"clone/rent_car_us/models"
+	"clone/rent_car_us/api/models"
 	"clone/rent_car_us/pkg"
 	"database/sql"
 	 "fmt"
@@ -92,7 +92,7 @@ func (c carRepo) GetAllCars(req models.GetAllCarsRequest) (models.GetAllCarsResp
 		filter += fmt.Sprintf(` and name ILIKE  '%%%v%%' `, req.Search)
 	}
 
-	filter += fmt.Sprintf("OFFSET %v LIMIT %v", offset, req.Limit)
+	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter:", filter)
 	rows, err := c.db.Query(`select 
 				count(id) OVER(),

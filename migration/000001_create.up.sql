@@ -1,4 +1,3 @@
-/*sudo -u postgres psql -d sqldatabase*/
 CREATE TABLE IF NOT EXISTS cars (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name Varchar(50) NOT NULL,
@@ -22,7 +21,7 @@ CREATE TABLE IF NOT EXISTS customers (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
     deleted_at INTEGER DEFAULT 0
-)
+);
 
 CREATE UNIQUE INDEX index_phone
 ON Customers(phone,deleted_at);
@@ -39,6 +38,7 @@ CREATE TABLE orders (
   "created_ad"  TIMESTAMP DEFAULT NOW(),
   "updated_at" TIMESTAMP
 );
+
 ALTER TABLE cars
 ADD year INTEGER NOT NULL;
 

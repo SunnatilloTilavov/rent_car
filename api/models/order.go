@@ -22,13 +22,10 @@ type CreateOrder struct {
 	ToDate     string `json:"to_date"`
 	Status     string `json:"status"`
 	Paid       bool   `json:"payment_status"`
-	Amount     float32    `json:"amount"`
+	Amount     float32  `json:"amount"`
 }
 
-type GetAllOrders struct {
-	Orders []GetOrder `json:"orders"`
-	Count  int        `json:"count"`
-}
+
 
 type GetAllOrdersRequest struct {
     Search string `json:"search"`
@@ -37,6 +34,6 @@ type GetAllOrdersRequest struct {
 }
 
 type GetAllOrdersResponse struct {
-	Orders []GetAllOrders `json:"orders"`
+	Orders []GetOrder `json:"orders"`
 	Count int16 `json:"count"`
 }

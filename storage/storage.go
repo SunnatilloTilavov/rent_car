@@ -1,6 +1,6 @@
 package storage
 
-import "clone/rent_car_us/models"
+import "clone/rent_car_us/api/models"
 
 type IStorage interface {
 	CloseDB()
@@ -21,8 +21,11 @@ type ICustomerStorage interface {
 	Create(models.Customer) (string, error)
 	GetByID(id string) (models.Customer, error)
 	GetAllCustomers(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
+	GetAllCustomerCars(request models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error)
 	Update(models.Customer) (string, error)
 	Delete(string) error
+	///GetCustomer(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
+
 }
 
 type IOrderStorage interface {

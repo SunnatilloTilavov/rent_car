@@ -1,12 +1,12 @@
 package main
 
 import (
-	"clone/rent_car_us/config"
-	"clone/rent_car_us/controller"
-	"clone/rent_car_us/storage/postgres"
 	"fmt"
-	"net/http"
+	"clone/rent_car_us/api"
+	"clone/rent_car_us/config"
+	"clone/rent_car_us/storage/postgres"
 )
+
 func main() {
 	cfg := config.Load()
 	store, err := postgres.New(cfg)
@@ -16,13 +16,8 @@ func main() {
 	}
 	defer store.CloseDB()
 
-	con := controller.NewController(store)
-
-	http.HandleFunc("/car", con.Car)
-	http.HandleFunc("/customer", con.Customer)
-	http.HandleFunc("/order", con.Order)
+	c := api.New(store)
 
 	fmt.Println("programm is running on localhost:8008...")
-	http.ListenAndServe(":8080", nil)
-
+	c.Run(":8080")
 }
