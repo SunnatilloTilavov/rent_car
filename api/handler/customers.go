@@ -2,13 +2,25 @@ package handler
 
 import (
 	"fmt"
+	_ "clone/rent_car_us/api/docs"
 	"clone/rent_car_us/api/models"
 	"clone/rent_car_us/pkg/check"
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
-
+// CreateCustomer godoc
+// @Router 		/customer [POST]
+// @Summary 	create a customer
+// @Description This api is creates a new customer and returns it's id
+// @Tags 		customer
+// @Accept		json
+// @Produce		json
+// @Param		customer body models.Customer true "customer"
+// @Success		200  {object}  models.Customer
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 func (h Handler) CreateCustomer(c *gin.Context) {
 	Customer := models.Customer{}
 
@@ -24,7 +36,19 @@ func (h Handler) CreateCustomer(c *gin.Context) {
 
 	handleResponse(c, "Created successfully", http.StatusOK, id)
 }
-
+// Updatecustomer godoc
+// @Router 		/customer/{id} [PUT]
+// @Summary 	update a customer
+// @Description This api is update a  customer and returns it's id
+// @Tags 		customer
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Param		customer body models.Customer true "customer"
+// @Success		200  {object}  models.Customer
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 func (h Handler) UpdateCustomer(c *gin.Context) {
 	Customer := models.Customer{}
 
@@ -58,6 +82,20 @@ func (h Handler) UpdateCustomer(c *gin.Context) {
 
 	handleResponse(c, "Updated successfully", http.StatusOK, id)
 }
+// GETALLCustomerS godoc
+// @Router 		/customer [GET]
+// @Summary 	Get customer list
+// @Description Get customer list
+// @Tags 		customer
+// @Accept		json
+// @Produce		json
+// @Param		page path string false "page"
+// @Param		limit path string false "limit"
+// @Param		search path string false "search"
+// @Success		200  {object}  models.Customer
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 
 func (h Handler) GetAllCustomers(c *gin.Context) {
 	var (
@@ -90,6 +128,19 @@ func (h Handler) GetAllCustomers(c *gin.Context) {
 
 	handleResponse(c, "", http.StatusOK, Customers)
 }
+// Deletecustomer godoc
+// @Router 		/customer/{id} [DELETE]
+// @Summary 	delete a customer
+// @Description This api is delete a  customer and returns it's id
+// @Tags 		customer
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Success		200  {object}  models.Response
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
+
 
 func (h Handler) DeleteCustomer(c *gin.Context) {
 
@@ -110,6 +161,19 @@ func (h Handler) DeleteCustomer(c *gin.Context) {
 
 	handleResponse(c, "", http.StatusOK, id)
 }
+
+// GETBYIDCustomer godoc
+// @Router 		/customer [GET]
+// @Summary 	Get customer 
+// @Description Get customer
+// @Tags 		customer
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Success		200  {object}  models.Customer
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 
 func (h Handler) GetByIDCustomer(c *gin.Context) {
  

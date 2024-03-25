@@ -1,0 +1,315 @@
+definitions:
+  models.Car:
+    properties:
+      brand:
+        type: string
+      colour:
+        type: string
+      createdAt:
+        type: string
+      engineCap:
+        type: number
+      hoursePower:
+        type: integer
+      id:
+        type: string
+      model:
+        type: string
+      name:
+        type: string
+      updatedAt:
+        type: string
+      year:
+        type: integer
+    type: object
+  models.CreateOrder:
+    properties:
+      amount:
+        type: number
+      car_id:
+        type: string
+      customer_id:
+        type: string
+      from_date:
+        type: string
+      payment_status:
+        type: boolean
+      status:
+        type: string
+      to_date:
+        type: string
+    type: object
+  models.Customer:
+    properties:
+      createdAt:
+        type: string
+      first_name:
+        type: string
+      gmail:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.GetOrder:
+    properties:
+      amount:
+        type: number
+      car:
+        $ref: '#/definitions/models.Car'
+      created_at:
+        type: string
+      customer:
+        $ref: '#/definitions/models.Customer'
+      from_date:
+        type: string
+      id:
+        type: string
+      payment_status:
+        type: boolean
+      status:
+        type: string
+      to_date:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Response:
+    properties:
+      data: {}
+      description:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: This is a sample server celler server.
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /car:
+    post:
+      consumes:
+      - application/json
+      description: This api is creates a new car and returns it's id
+      parameters:
+      - description: car
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/models.Car'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: create a car
+      tags:
+      - car
+  /car/{id}:
+    put:
+      consumes:
+      - application/json
+      description: This api is update a  car and returns it's id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: car
+        in: body
+        name: car
+        required: true
+        schema:
+          $ref: '#/definitions/models.Car'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: update a car
+      tags:
+      - car
+  /customer:
+    post:
+      consumes:
+      - application/json
+      description: This api is creates a new customer and returns it's id
+      parameters:
+      - description: customer
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: create a customer
+      tags:
+      - customer
+  /customer/{id}:
+    put:
+      consumes:
+      - application/json
+      description: This api is update a  customer and returns it's id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: customer
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/models.Customer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: update a customer
+      tags:
+      - customer
+  /order:
+    get:
+      consumes:
+      - application/json
+      description: Get order list
+      parameters:
+      - description: page
+        in: path
+        name: page
+        type: string
+      - description: limit
+        in: path
+        name: limit
+        type: string
+      - description: search
+        in: path
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get order list
+      tags:
+      - order
+    post:
+      consumes:
+      - application/json
+      description: This api is creates a new order and returns it's id
+      parameters:
+      - description: order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: create a order
+      tags:
+      - car
+swagger: "2.0"

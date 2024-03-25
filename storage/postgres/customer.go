@@ -119,7 +119,7 @@ GROUP BY
     o.to_date,
     o.status,
     o.paid,
-    o.amount;`
+    o.amount`
 
 	rows, err := c.db.Query(query )
 	if err != nil {
@@ -153,7 +153,7 @@ GROUP BY
 			return resp, err
 		}
 		customer.UpdatedAt = pkg.NullStringToString(updateAt)
-		resp.Customer = append(resp.Customer,models.GetAllCustomer{})
+		resp.Customer = append(resp.Customer,customer)
 	}
 	if err = rows.Err();err != nil {
 		return resp,err

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	_ "clone/rent_car_us/api/docs"
 	"strconv"
 	"fmt"
 	"clone/rent_car_us/api/models"
@@ -10,6 +11,18 @@ import (
 	"github.com/google/uuid"
 )
 
+// CreateCar godoc
+// @Router 		/car [POST]
+// @Summary 	create a car
+// @Description This api is creates a new car and returns it's id
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		car body models.Car true "car"
+// @Success		200  {object}  models.Car
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 func (h Handler) CreateCar(c *gin.Context) {
 	car := models.Car{}
 
@@ -31,7 +44,19 @@ func (h Handler) CreateCar(c *gin.Context) {
 
 	handleResponse(c, "Created successfully", http.StatusOK, id)
 }
-
+// Updatecar godoc
+// @Router 		/car/{id} [PUT]
+// @Summary 	update a car
+// @Description This api is update a  car and returns it's id
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Param		car body models.Car true "car"
+// @Success		200  {object}  models.Car
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 func (h Handler) UpdateCar(c *gin.Context) {
 	car := models.Car{}
 
@@ -59,6 +84,21 @@ func (h Handler) UpdateCar(c *gin.Context) {
 
 	handleResponse(c, "Updated successfully", http.StatusOK, id)
 }
+
+// GETALLCARS godoc
+// @Router 		/car [GET]
+// @Summary 	Get user list
+// @Description Get user list
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		page path string false "page"
+// @Param		limit path string false "limit"
+// @Param		search path string false "search"
+// @Success		200  {object}  models.Car
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 
 func (h Handler) GetAllCars(c *gin.Context) {
 	var (
@@ -91,6 +131,18 @@ func (h Handler) GetAllCars(c *gin.Context) {
 
 	handleResponse(c, "", http.StatusOK, cars)
 }
+// Deletecar godoc
+// @Router 		/car/{id} [DELETE]
+// @Summary 	delete a car
+// @Description This api is delete a  car and returns it's id
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Success		200  {object}  models.Response
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
 
 func (h Handler) DeleteCar(c *gin.Context) {
 
@@ -111,6 +163,20 @@ func (h Handler) DeleteCar(c *gin.Context) {
 
 	handleResponse(c, "", http.StatusOK, id)
 }
+
+// GETBYIDcar godoc
+// @Router 		/car [GET]
+// @Summary 	Get user 
+// @Description Get user
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Success		200  {object}  models.Car
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
+
 
 func (h Handler) GetByIDCar(c *gin.Context) {
  

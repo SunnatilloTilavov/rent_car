@@ -1,4 +1,7 @@
 /*sudo -u postgres psql -d sqldatabase*/
+
+https://localhost:8008/swagger/index.html#/
+
 CREATE TABLE IF NOT EXISTS cars (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name Varchar(50) NOT NULL,
