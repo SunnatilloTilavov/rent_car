@@ -12,9 +12,6 @@ import (
 // @title           Swagger Example API
 // @version         1.0
 // @description     This is a sample server celler server.
-
-
-
 func New(store storage.IStorage) *gin.Engine {
 	h := handler.NewStrg(store)
 

@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"clone/rent_car_us/pkg"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"context"
 )
 
 type orderRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewOrder(db *sql.DB) orderRepo {
+func NewOrder(db *pgxpool.Pool) orderRepo {
 	return orderRepo{
 		db: db,
 	}
@@ -32,7 +34,7 @@ func (o *orderRepo) CreateOrder(order models.CreateOrder) (string, error) {
 		created_ad) 
      values ($1, $2, $3, $4, $5, $6, $7,$8, NOW())`
 
-	_, err := o.db.Exec(query, id.String(),
+	_, err := o.db.Exec(context.Background(),query, id.String(),
 		order.CustomerId, order.CarId,
 		order.FromDate, order.ToDate,
 		order.Status, order.Paid,
@@ -55,7 +57,7 @@ func (o *orderRepo) UpdateOrder(order models.GetOrder) (string, error) {
         updated_at = CURRENT_TIMESTAMP
         where id = $8`
 
-	_, err := o.db.Exec(query, order.Customer.Id,
+	_, err := o.db.Exec(context.Background(),query, order.Customer.Id,
 		order.Car.Id, order.FromDate,
 		order.ToDate, order.Status,
 		order.Status, order.Paid,
@@ -90,7 +92,7 @@ func (o *orderRepo) GetOne(orderID string) (models.GetOrder, error) {
 		JOIN customers cu ON o.customer_id = cu.id
 		WHERE o.id = $1`
 
-	row := o.db.QueryRow(query, orderID)
+	row := o.db.QueryRow(context.Background(),query, orderID)
 	err := row.Scan(
 		&order.Id,
 		&order.Car.Name,
@@ -142,7 +144,7 @@ fmt.Println("filter:", filter)
 	cu.phone as customer_phone
 	From orders o JOIN cars c ON o.car_id = c.id
 	JOIN customers cu ON o.customer_id = cu.id 	`
-	rows,err :=o.db.Query(query + filter + ``)
+	rows,err :=o.db.Query(context.Background(),query + filter + ``)
 	if err != nil {
 		return resp,err
 	}
@@ -183,14 +185,12 @@ fmt.Println("filter:", filter)
    
    countQuery := `SELECT COUNT(*) FROM orders`
 
-   err = o.db.QueryRow(countQuery).Scan(&resp.Count)
+   err = o.db.QueryRow(context.Background(),countQuery).Scan(&resp.Count)
      if err != nil{
 		return resp,err
 	 }
    return resp,nil
 }
-
-
 
 
 
@@ -202,18 +202,10 @@ func (o *orderRepo) DeleteOrder(id string) error {
 	}
 	query := `DELETE FROM orders WHERE id = $1`
 
-	result, err := o.db.Exec(query, id)
-	if err != nil {
-		return fmt.Errorf("error deleting order: %v", err)
-	}
+	_, err = o.db.Exec(context.Background(),query, id)
 
-	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("error checking rows affected: %v", err)
-	}
-
-	if rowsAffected == 0 {
-		return fmt.Errorf("order with ID %s not found", id)
+		return err
 	}
 	return nil
 }

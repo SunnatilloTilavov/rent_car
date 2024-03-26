@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"clone/rent_car_us/api"
 	"clone/rent_car_us/config"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 	cfg := config.Load()
-	store, err := postgres.New(cfg)
+	store, err := postgres.New(context.Background(), cfg)
 	if err != nil {
 		fmt.Println("error while connecting db, err: ", err)
 		return
@@ -18,6 +19,7 @@ func main() {
 
 	c := api.New(store)
 
-	fmt.Println("programm is running on localhost:8008...")
+	fmt.Println("programm is running on localhost:8080...")
 	c.Run(":8080")
 }
+

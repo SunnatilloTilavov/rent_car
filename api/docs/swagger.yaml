@@ -94,6 +94,38 @@ info:
   version: "1.0"
 paths:
   /car:
+    get:
+      consumes:
+      - application/json
+      description: Get user
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get user
+      tags:
+      - car
     post:
       consumes:
       - application/json
@@ -128,6 +160,38 @@ paths:
       tags:
       - car
   /car/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This api is delete a  car and returns it's id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: delete a car
+      tags:
+      - car
     put:
       consumes:
       - application/json
@@ -167,6 +231,38 @@ paths:
       tags:
       - car
   /customer:
+    get:
+      consumes:
+      - application/json
+      description: Get customer
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get customer
+      tags:
+      - customer
     post:
       consumes:
       - application/json
@@ -201,6 +297,38 @@ paths:
       tags:
       - customer
   /customer/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This api is delete a  customer and returns it's id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: delete a customer
+      tags:
+      - customer
     put:
       consumes:
       - application/json
@@ -243,19 +371,12 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get order list
+      description: Get order
       parameters:
-      - description: page
+      - description: id
         in: path
-        name: page
-        type: string
-      - description: limit
-        in: path
-        name: limit
-        type: string
-      - description: search
-        in: path
-        name: search
+        name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -276,7 +397,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Get order list
+      summary: Get order
       tags:
       - order
     post:
@@ -310,6 +431,45 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: create a order
+      tags:
+      - car
+  /order/{id}:
+    put:
+      consumes:
+      - application/json
+      description: This api is update a  order and returns it's id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.GetOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: update a order
       tags:
       - car
 swagger: "2.0"

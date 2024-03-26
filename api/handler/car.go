@@ -99,7 +99,6 @@ func (h Handler) UpdateCar(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
 func (h Handler) GetAllCars(c *gin.Context) {
 	var (
 		request = models.GetAllCarsRequest{}
@@ -143,7 +142,6 @@ func (h Handler) GetAllCars(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
 func (h Handler) DeleteCar(c *gin.Context) {
 
 	id := c.Param("id")
@@ -176,8 +174,6 @@ func (h Handler) DeleteCar(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
-
 func (h Handler) GetByIDCar(c *gin.Context) {
  
 	id := c.Param("id")

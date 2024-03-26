@@ -1,50 +1,62 @@
 package postgres
 
-
 import (
-	"clone/rent_car_us/config"
-	"clone/rent_car_us/storage"
-	"database/sql"
-	"fmt"
+ "context"
+ "fmt"
+ "clone/rent_car_us/config"
+ "clone/rent_car_us/storage"
+ "time"
 
-	_ "github.com/lib/pq"
+ _ "github.com/lib/pq"
+
+ "github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Store struct {
-	DB       *sql.DB
+ Pool *pgxpool.Pool
 }
-func New(cfg config.Config) (storage.IStorage, error) {
-	url := fmt.Sprintf(`host=%s port=%v user=%s password=%s database=%s sslmode=disable`,
-		cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDatabase)
 
-	db, err := sql.Open("postgres", url)
-	if err != nil {
-		return nil, err
-	}
+func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
+ url := fmt.Sprintf(`host=%s port=%v user=%s password=%s database=%s sslmode=disable`,
+  cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDatabase)
 
-	return Store{
-		DB: db,
-	}, nil
+ pgPoolConfig, err := pgxpool.ParseConfig(url)
+ if err != nil {
+  return nil, err
+ }
+
+ pgPoolConfig.MaxConns = 100
+ pgPoolConfig.MaxConnLifetime = time.Hour
+
+ newPool, err := pgxpool.NewWithConfig(context.Background(), pgPoolConfig)
+ if err != nil {
+  fmt.Println("error while connecting to db", err.Error())
+  return nil, err
+ }
+
+ return Store{
+  Pool: newPool,
+ }, nil
 }
+
 func (s Store) CloseDB() {
-	s.DB.Close()
+ s.Pool.Close()
 }
 
 func (s Store) Car() storage.ICarStorage {
-	newCar := NewCar(s.DB)
+ newCar := NewCar(s.Pool)
 
-	return &newCar
+ return &newCar
 }
+
 func (s Store) Customer() storage.ICustomerStorage {
-	newCustomer := NewCustomer(s.DB)
+ newCustomer := NewCustomer(s.Pool)
 
-	return &newCustomer
+ return &newCustomer
 }
+
 func (s Store) Order() storage.IOrderStorage {
-	newOrder := NewOrder(s.DB)
+ NewOrder := NewOrder(s.Pool)
 
-	return &newOrder
+ return &NewOrder
 }
-
-
-

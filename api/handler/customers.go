@@ -36,6 +36,7 @@ func (h Handler) CreateCustomer(c *gin.Context) {
 
 	handleResponse(c, "Created successfully", http.StatusOK, id)
 }
+
 // Updatecustomer godoc
 // @Router 		/customer/{id} [PUT]
 // @Summary 	update a customer
@@ -82,6 +83,7 @@ func (h Handler) UpdateCustomer(c *gin.Context) {
 
 	handleResponse(c, "Updated successfully", http.StatusOK, id)
 }
+
 // GETALLCustomerS godoc
 // @Router 		/customer [GET]
 // @Summary 	Get customer list
@@ -96,7 +98,6 @@ func (h Handler) UpdateCustomer(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
 func (h Handler) GetAllCustomers(c *gin.Context) {
 	var (
 		request = models.GetAllCustomersRequest{}
@@ -128,6 +129,7 @@ func (h Handler) GetAllCustomers(c *gin.Context) {
 
 	handleResponse(c, "", http.StatusOK, Customers)
 }
+
 // Deletecustomer godoc
 // @Router 		/customer/{id} [DELETE]
 // @Summary 	delete a customer
@@ -140,8 +142,6 @@ func (h Handler) GetAllCustomers(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
-
 func (h Handler) DeleteCustomer(c *gin.Context) {
 
 	id := c.Param("id")
@@ -174,7 +174,6 @@ func (h Handler) DeleteCustomer(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
 func (h Handler) GetByIDCustomer(c *gin.Context) {
  
 	id := c.Param("id")
@@ -189,8 +188,21 @@ func (h Handler) GetByIDCustomer(c *gin.Context) {
    }
 
 
-
-   func (h Handler) GetAllCustomerCars(c *gin.Context) {
+// GETALLCustomerS godoc
+// @Router 		/customer [GET]
+// @Summary 	Get user list
+// @Description Get user list
+// @Tags 		car
+// @Accept		json
+// @Produce		json
+// @Param		page path string false "page"
+// @Param		limit path string false "limit"
+// @Param		search path string false "search"
+// @Success		200  {object}  models.GetAllCustomerCarsRequest
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
+func (h Handler) GetAllCustomerCars(c *gin.Context) {
 	var (
 		request = models.GetAllCustomerCarsRequest{}
 	)

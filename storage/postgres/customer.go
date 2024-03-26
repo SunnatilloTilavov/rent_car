@@ -6,13 +6,15 @@ import (
 	"clone/rent_car_us/api/models"
 	"clone/rent_car_us/pkg"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"context"
 )
 
 type customerRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewCustomer(db *sql.DB) customerRepo {
+func NewCustomer(db *pgxpool.Pool) customerRepo {
 	return customerRepo{
 		db: db,
 	}
@@ -38,7 +40,7 @@ func (c *customerRepo) Create(customer models.Customer) (string, error) {
 		phone     )
 		VALUES($1,$2,$3,$4,$5) `
 
-	_, err := c.db.Exec(query,
+	_, err := c.db.Exec(context.Background(),query,
 		id.String(),
 		customer.First_name, customer.Last_name,
 		customer.Gmail, customer.Phone)
@@ -60,7 +62,7 @@ func (c *customerRepo) Update(customer models.Customer) (string, error) {
 		WHERE id = $5 
 	`
 
-	_, err := c.db.Exec(query,
+	_, err := c.db.Exec(context.Background(),query,
 		customer.First_name, customer.Last_name,
 		customer.Gmail, customer.Phone,customer.Id)
 
@@ -121,7 +123,7 @@ GROUP BY
     o.paid,
     o.amount`
 
-	rows, err := c.db.Query(query )
+	rows, err := c.db.Query(context.Background(),query)
 	if err != nil {
 		return resp, err
 	}
@@ -159,7 +161,7 @@ GROUP BY
 		return resp,err
 	}
 	countQuery := `Select count(*) from customers`
-	err = c.db.QueryRow(countQuery).Scan(&resp.Count)
+	err = c.db.QueryRow(context.Background(),countQuery).Scan(&resp.Count)
 	if err != nil {
 		return resp,err
 	}
@@ -169,7 +171,7 @@ GROUP BY
 func (c *customerRepo) GetByID(id string) (models.Customer, error) {
 	customer := models.Customer{}
 
-	if err := c.db.QueryRow(`select id,
+	if err := c.db.QueryRow(context.Background(),`select id,
 	first_name,
 	last_name,gmail,
 	phone
@@ -190,7 +192,7 @@ func (c *customerRepo) Delete(id string) error {
 		WHERE id = $1 
 	`
 
-	_, err := c.db.Exec(query, id)
+	_, err := c.db.Exec(context.Background(),query, id)
 
 	if err != nil {
 		return err
@@ -226,7 +228,7 @@ func (c *customerRepo) GetAllCustomerCars(req models.GetAllCustomerCarsRequest) 
 	From customers cu JOIN orders o ON  cu.id = o.customer_id Join cars ca  ON ca.id=o.car_id 
 	`
 
-	rows, err := c.db.Query(query + filter + ``)
+	rows, err := c.db.Query(context.Background(),query + filter + ``)
 	if err != nil {
 		return resp, err
 	}
@@ -250,7 +252,7 @@ func (c *customerRepo) GetAllCustomerCars(req models.GetAllCustomerCarsRequest) 
 		return resp,err
 	}
 	countQuery := `Select count(*) from customers`
-	err = c.db.QueryRow(countQuery).Scan(&resp.Count)
+	err = c.db.QueryRow(context.Background(),countQuery).Scan(&resp.Count)
 	if err != nil {
 		return resp,err
 	}

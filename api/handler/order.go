@@ -36,6 +36,7 @@ func (h Handler) CreateOrder(c *gin.Context) {
 
 	handleResponse(c, "Created successfully", http.StatusOK, id)
 }
+
 // UpdateOrder godoc
 // @Router 		/order/{id} [PUT]
 // @Summary 	update a order
@@ -49,7 +50,6 @@ func (h Handler) CreateOrder(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
 func (h Handler) UpdateOrder(c *gin.Context) {
 	Order := models.GetOrder{}
 
@@ -132,7 +132,6 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
-
 func (h Handler) GetOne(c *gin.Context) {
  
 	id := c.Param("id")
