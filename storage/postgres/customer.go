@@ -28,7 +28,7 @@ get (id) body,err
 getAll (search) []body,count,err
 */
 
-func (c *customerRepo) Create(customer models.Customer) (string, error) {
+func (c *customerRepo) Create(ctx context.Context,customer models.Customer) (string, error) {
 
 	id := uuid.New()
 
@@ -40,7 +40,7 @@ func (c *customerRepo) Create(customer models.Customer) (string, error) {
 		phone     )
 		VALUES($1,$2,$3,$4,$5) `
 
-	_, err := c.db.Exec(context.Background(),query,
+	_, err := c.db.Exec(ctx,query,
 		id.String(),
 		customer.First_name, customer.Last_name,
 		customer.Gmail, customer.Phone)
@@ -51,7 +51,7 @@ func (c *customerRepo) Create(customer models.Customer) (string, error) {
 	return id.String(), nil
 }
 
-func (c *customerRepo) Update(customer models.Customer) (string, error) {
+func (c *customerRepo) Update(ctx context.Context,customer models.Customer) (string, error) {
 
 	query := ` UPDATE customers set
 	        first_name=$1,
@@ -62,7 +62,7 @@ func (c *customerRepo) Update(customer models.Customer) (string, error) {
 		WHERE id = $5 
 	`
 
-	_, err := c.db.Exec(context.Background(),query,
+	_, err := c.db.Exec(ctx,query,
 		customer.First_name, customer.Last_name,
 		customer.Gmail, customer.Phone,customer.Id)
 
@@ -73,7 +73,7 @@ func (c *customerRepo) Update(customer models.Customer) (string, error) {
 	return customer.Id, nil
 }
 
-func (c *customerRepo) GetAllCustomers(req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error) {
+func (c *customerRepo) GetAllCustomers(ctx context.Context,req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error) {
 	var (
 		resp   = models.GetAllCustomersResponse{}
 		filter = ""
@@ -123,7 +123,7 @@ GROUP BY
     o.paid,
     o.amount`
 
-	rows, err := c.db.Query(context.Background(),query)
+	rows, err := c.db.Query(ctx,query)
 	if err != nil {
 		return resp, err
 	}
@@ -161,17 +161,17 @@ GROUP BY
 		return resp,err
 	}
 	countQuery := `Select count(*) from customers`
-	err = c.db.QueryRow(context.Background(),countQuery).Scan(&resp.Count)
+	err = c.db.QueryRow(ctx,countQuery).Scan(&resp.Count)
 	if err != nil {
 		return resp,err
 	}
 	return resp, nil
 }
 
-func (c *customerRepo) GetByID(id string) (models.Customer, error) {
+func (c *customerRepo) GetByID(ctx context.Context,id string) (models.Customer, error) {
 	customer := models.Customer{}
 
-	if err := c.db.QueryRow(context.Background(),`select id,
+	if err := c.db.QueryRow(ctx,`select id,
 	first_name,
 	last_name,gmail,
 	phone
@@ -185,14 +185,14 @@ func (c *customerRepo) GetByID(id string) (models.Customer, error) {
 	}
 	return customer, nil
 }
-func (c *customerRepo) Delete(id string) error {
+func (c *customerRepo) Delete(ctx context.Context,id string) error {
 
 	query := ` UPDATE customers set
 			deleted_at = date_part('epoch', CURRENT_TIMESTAMP)::int
 		WHERE id = $1 
 	`
 
-	_, err := c.db.Exec(context.Background(),query, id)
+	_, err := c.db.Exec(ctx,query, id)
 
 	if err != nil {
 		return err
@@ -203,7 +203,7 @@ func (c *customerRepo) Delete(id string) error {
 
 
 
-func (c *customerRepo) GetAllCustomerCars(req models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error) {
+func (c *customerRepo) GetAllCustomerCars(ctx context.Context,req models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error) {
 	var (
 		resp   = models.GetAllCustomerCarsResponse{}
 		filter = ""
@@ -228,7 +228,7 @@ func (c *customerRepo) GetAllCustomerCars(req models.GetAllCustomerCarsRequest) 
 	From customers cu JOIN orders o ON  cu.id = o.customer_id Join cars ca  ON ca.id=o.car_id 
 	`
 
-	rows, err := c.db.Query(context.Background(),query + filter + ``)
+	rows, err := c.db.Query(ctx,query + filter + ``)
 	if err != nil {
 		return resp, err
 	}

@@ -56,6 +56,17 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.GetAllCustomerCarsRequest:
+    properties:
+      id:
+        type: string
+      limit:
+        type: integer
+      page:
+        type: integer
+      search:
+        type: string
+    type: object
   models.GetOrder:
     properties:
       amount:
@@ -97,12 +108,19 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get user
+      description: Get user list
       parameters:
-      - description: id
+      - description: page
         in: path
-        name: id
-        required: true
+        name: page
+        type: string
+      - description: limit
+        in: path
+        name: limit
+        type: string
+      - description: search
+        in: path
+        name: search
         type: string
       produces:
       - application/json
@@ -123,7 +141,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Get user
+      summary: Get user list
       tags:
       - car
     post:
@@ -228,6 +246,79 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: update a car
+      tags:
+      - car
+  /car/free:
+    get:
+      consumes:
+      - application/json
+      description: Get user list
+      parameters:
+      - description: page
+        in: path
+        name: page
+        type: string
+      - description: limit
+        in: path
+        name: limit
+        type: string
+      - description: search
+        in: path
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get user list
+      tags:
+      - car
+  /car{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Car'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get user
       tags:
       - car
   /customer:
@@ -367,16 +458,67 @@ paths:
       summary: update a customer
       tags:
       - customer
+  /customercars:
+    get:
+      consumes:
+      - application/json
+      description: Get user list
+      parameters:
+      - description: Id
+        in: path
+        name: Id
+        type: string
+      - description: page
+        in: path
+        name: page
+        type: string
+      - description: limit
+        in: path
+        name: limit
+        type: string
+      - description: search
+        in: path
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetAllCustomerCarsRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get user list
+      tags:
+      - customer
   /order:
     get:
       consumes:
       - application/json
-      description: Get order
+      description: Get order list
       parameters:
-      - description: id
+      - description: page
         in: path
-        name: id
-        required: true
+        name: page
+        type: string
+      - description: limit
+        in: path
+        name: limit
+        type: string
+      - description: search
+        in: path
+        name: search
         type: string
       produces:
       - application/json
@@ -397,7 +539,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
-      summary: Get order
+      summary: Get order list
       tags:
       - order
     post:
@@ -432,8 +574,40 @@ paths:
             $ref: '#/definitions/models.Response'
       summary: create a order
       tags:
-      - car
+      - order
   /order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get order
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Get order
+      tags:
+      - order
     put:
       consumes:
       - application/json
@@ -471,5 +645,5 @@ paths:
             $ref: '#/definitions/models.Response'
       summary: update a order
       tags:
-      - car
+      - order
 swagger: "2.0"

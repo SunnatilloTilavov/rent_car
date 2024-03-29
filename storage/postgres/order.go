@@ -20,7 +20,7 @@ func NewOrder(db *pgxpool.Pool) orderRepo {
 	}
 }
 
-func (o *orderRepo) CreateOrder(order models.CreateOrder) (string, error) {
+func (o *orderRepo) CreateOrder(ctx context.Context,order models.CreateOrder) (string, error) {
 	id := uuid.New()
 
 	query := `insert into orders (id,
@@ -34,7 +34,7 @@ func (o *orderRepo) CreateOrder(order models.CreateOrder) (string, error) {
 		created_ad) 
      values ($1, $2, $3, $4, $5, $6, $7,$8, NOW())`
 
-	_, err := o.db.Exec(context.Background(),query, id.String(),
+	_, err := o.db.Exec(ctx,query, id.String(),
 		order.CustomerId, order.CarId,
 		order.FromDate, order.ToDate,
 		order.Status, order.Paid,
@@ -45,7 +45,7 @@ func (o *orderRepo) CreateOrder(order models.CreateOrder) (string, error) {
 	return id.String(), nil
 }
 
-func (o *orderRepo) UpdateOrder(order models.GetOrder) (string, error) {
+func (o *orderRepo) UpdateOrder(ctx context.Context,order models.GetOrder) (string, error) {
 	query := `update orders set 
         customer_id = $1,
         car_id = $2,
@@ -57,7 +57,7 @@ func (o *orderRepo) UpdateOrder(order models.GetOrder) (string, error) {
         updated_at = CURRENT_TIMESTAMP
         where id = $8`
 
-	_, err := o.db.Exec(context.Background(),query, order.Customer.Id,
+	_, err := o.db.Exec(ctx,query, order.Customer.Id,
 		order.Car.Id, order.FromDate,
 		order.ToDate, order.Status,
 		order.Status, order.Paid,
@@ -68,7 +68,7 @@ func (o *orderRepo) UpdateOrder(order models.GetOrder) (string, error) {
 	return order.Id, nil
 }
 
-func (o *orderRepo) GetOne(orderID string) (models.GetOrder, error) {
+func (o *orderRepo) GetOne(ctx context.Context,orderID string) (models.GetOrder, error) {
 	order := models.GetOrder{
 		Car:      models.Car{},
 		Customer: models.Customer{},
@@ -92,7 +92,7 @@ func (o *orderRepo) GetOne(orderID string) (models.GetOrder, error) {
 		JOIN customers cu ON o.customer_id = cu.id
 		WHERE o.id = $1`
 
-	row := o.db.QueryRow(context.Background(),query, orderID)
+	row := o.db.QueryRow(ctx,query, orderID)
 	err := row.Scan(
 		&order.Id,
 		&order.Car.Name,
@@ -114,7 +114,7 @@ func (o *orderRepo) GetOne(orderID string) (models.GetOrder, error) {
 	return order, nil
 }
 
-func (o *orderRepo) GetAll(req models.GetAllOrdersRequest) (models.GetAllOrdersResponse,error) {
+func (o *orderRepo) GetAll(ctx context.Context,req models.GetAllOrdersRequest) (models.GetAllOrdersResponse,error) {
 	var (
 	resp = models.GetAllOrdersResponse{}
 	filter = ""
@@ -144,7 +144,7 @@ fmt.Println("filter:", filter)
 	cu.phone as customer_phone
 	From orders o JOIN cars c ON o.car_id = c.id
 	JOIN customers cu ON o.customer_id = cu.id 	`
-	rows,err :=o.db.Query(context.Background(),query + filter + ``)
+	rows,err :=o.db.Query(ctx,query + filter + ``)
 	if err != nil {
 		return resp,err
 	}
@@ -185,7 +185,7 @@ fmt.Println("filter:", filter)
    
    countQuery := `SELECT COUNT(*) FROM orders`
 
-   err = o.db.QueryRow(context.Background(),countQuery).Scan(&resp.Count)
+   err = o.db.QueryRow(ctx,countQuery).Scan(&resp.Count)
      if err != nil{
 		return resp,err
 	 }
@@ -195,14 +195,14 @@ fmt.Println("filter:", filter)
 
 
 
-func (o *orderRepo) DeleteOrder(id string) error {
+func (o *orderRepo) DeleteOrder(ctx context.Context,id string) error {
 	err := uuid.Validate(id)
 	if err != nil {
 		return fmt.Errorf("invalid order ID format: %v", err)
 	}
 	query := `DELETE FROM orders WHERE id = $1`
 
-	_, err = o.db.Exec(context.Background(),query, id)
+	_, err = o.db.Exec(ctx,query, id)
 
 	if err != nil {
 		return err

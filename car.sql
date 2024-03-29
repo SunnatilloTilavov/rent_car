@@ -1,6 +1,5 @@
 /*sudo -u postgres psql -d sqldatabase*/
 
-https://localhost:8008/swagger/index.html#/
 
 CREATE TABLE IF NOT EXISTS cars (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -43,8 +42,9 @@ CREATE TABLE orders (
   "updated_at" TIMESTAMP
 );
 ALTER TABLE cars
-ADD year INTEGER NOT NULL;
+ADD year INTEGER ;
 
 
 ALTER TABLE "orders" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("id");
 ALTER TABLE "orders" ADD FOREIGN KEY ("car_id") REFERENCES "cars" ("id");
+

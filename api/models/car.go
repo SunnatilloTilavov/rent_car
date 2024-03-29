@@ -5,7 +5,6 @@ type Car struct {
 	Name        string  `json:"name"`
 	Brand       string  `json:"brand"`
 	Model       string  `json:"model"`
-	Year        int     `json:"year"`    
 	HoursePower int     `json:"hoursePower"`
 	Colour      string  `json:"colour"`
 	EngineCap   float32 `json:"engineCap"`
@@ -25,3 +24,5 @@ type GetAllCarsRequest struct {
 	Limit  uint64 `json:"limit"`
 }
 
+
+// Year        int     `json:"year"`    

@@ -1,21 +1,25 @@
 package handler
 
 import (
- "fmt"
- "strconv"
- "clone/rent_car_us/config"
- "clone/rent_car_us/storage"
- "clone/rent_car_us/api/models"
- "github.com/gin-gonic/gin"
+	"clone/rent_car_us/api/models"
+	"clone/rent_car_us/config"
+	"clone/rent_car_us/service"
+	"clone/rent_car_us/storage"
+	"fmt"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
 	Store storage.IStorage
+	Services service.IServiceManager
 }
 
-func NewStrg(store storage.IStorage) Handler {
+func NewStrg(store storage.IStorage, services service.IServiceManager) Handler {
 	return Handler{
 		Store: store,
+		Services:services,
 	}
 }
 

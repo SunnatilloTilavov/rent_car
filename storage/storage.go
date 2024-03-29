@@ -1,7 +1,9 @@
 package storage
 
-import "clone/rent_car_us/api/models"
-
+import (
+	"clone/rent_car_us/api/models"
+	"context"
+)
 type IStorage interface {
 	CloseDB()
 	Car() ICarStorage
@@ -10,28 +12,29 @@ type IStorage interface {
 }
 
 type ICarStorage interface {
-	Create(models.Car) (string, error)
-	GetByID(id string) (models.Car, error)
-	GetAllCars(request models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
-	Update(models.Car) (string, error)
-	Delete(string) error
+	Create(context.Context,models.Car) (string, error)
+	Update(context.Context,models.Car) (string, error)
+	Delete(context.Context,string) error
+	GetByID(context.Context,string) (models.Car, error)
+	GetAllCars(context.Context, models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
+	GetAllCarsFree(context.Context, models.GetAllCarsRequest) (models.GetAllCarsResponse, error)
 }
 
 type ICustomerStorage interface {
-	Create(models.Customer) (string, error)
-	GetByID(id string) (models.Customer, error)
-	GetAllCustomers(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
-	GetAllCustomerCars(request models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error)
-	Update(models.Customer) (string, error)
-	Delete(string) error
+	Create(context.Context,models.Customer) (string, error)
+	GetByID(context.Context,string) (models.Customer, error)
+	GetAllCustomers(context.Context,models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
+	GetAllCustomerCars(context.Context,models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error)
+	Update(context.Context,models.Customer) (string, error)
+	Delete(context.Context,string) error
 	///GetCustomer(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
 
 }
 
 type IOrderStorage interface {
-	CreateOrder(models.CreateOrder) (string, error)
-	UpdateOrder(models.GetOrder) (string, error)
-	GetOne(id string) (models.GetOrder, error)
-	GetAll(request models.GetAllOrdersRequest) (models.GetAllOrdersResponse, error)
-	DeleteOrder(string) error
+	CreateOrder(context.Context,models.CreateOrder) (string, error)
+	UpdateOrder(context.Context,models.GetOrder) (string, error)
+	GetOne(context.Context,string) (models.GetOrder, error)
+	GetAll(context.Context,models.GetAllOrdersRequest) (models.GetAllOrdersResponse, error)
+	DeleteOrder(context.Context,string) error
 }

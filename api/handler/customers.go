@@ -1,14 +1,17 @@
 package handler
 
 import (
-	"fmt"
 	_ "clone/rent_car_us/api/docs"
 	"clone/rent_car_us/api/models"
 	"clone/rent_car_us/pkg/check"
+	"context"
+	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
+
 // CreateCustomer godoc
 // @Router 		/customer [POST]
 // @Summary 	create a customer
@@ -28,7 +31,7 @@ func (h Handler) CreateCustomer(c *gin.Context) {
 		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
-	id, err := h.Store.Customer().Create(Customer)
+	id, err := h.Services.Customer().Create(context.Background(),Customer)
 	if err != nil {
 		handleResponse(c, "error while creating Customer", http.StatusBadRequest, err.Error())
 		return
@@ -75,7 +78,7 @@ func (h Handler) UpdateCustomer(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Store.Customer().Update(Customer)
+	id, err := h.Services.Customer().Update(context.Background(),Customer)
 	if err != nil {
 		handleResponse(c, "error while updating Customer", http.StatusBadRequest, err.Error())
 		return
@@ -120,7 +123,7 @@ func (h Handler) GetAllCustomers(c *gin.Context) {
 
 	request.Page = page
 	request.Limit = limit
-	Customers, err := h.Store.Customer().GetAllCustomers(request)
+	Customers, err := h.Services.Customer().GetAllCustomers(context.Background(),request)
 	if err != nil {
 		handleResponse(c, "error while gettign Customers", http.StatusBadRequest, err.Error())
 
@@ -153,7 +156,7 @@ func (h Handler) DeleteCustomer(c *gin.Context) {
 		return
 	}
 
-	err = h.Store.Customer().Delete(id)
+	err = h.Services.Customer().Delete(context.Background(),id)
 	if err != nil {
 		handleResponse(c, "error while deleting Customer", http.StatusInternalServerError, err.Error())
 		return
@@ -179,7 +182,7 @@ func (h Handler) GetByIDCustomer(c *gin.Context) {
 	id := c.Param("id")
 	fmt.Println("id: ", id)
    
-	admin, err := h.Store.Customer().GetByID(id)
+	admin, err := h.Services.Customer().GetByIDCustomer(context.Background(),id)
 	if err != nil {
 	 handleResponse(c, "error while getting admin by id", http.StatusInternalServerError, err)
 	 return
@@ -189,12 +192,13 @@ func (h Handler) GetByIDCustomer(c *gin.Context) {
 
 
 // GETALLCustomerS godoc
-// @Router 		/customer [GET]
+// @Router 		/customercars [GET]
 // @Summary 	Get user list
 // @Description Get user list
-// @Tags 		car
+// @Tags 		customer
 // @Accept		json
 // @Produce		json
+// @Param		Id path string false "Id"
 // @Param		page path string false "page"
 // @Param		limit path string false "limit"
 // @Param		search path string false "search"
@@ -225,7 +229,7 @@ func (h Handler) GetAllCustomerCars(c *gin.Context) {
 
 	request.Page = page
 	request.Limit = limit
-	Orders, err := h.Store.Customer().GetAllCustomerCars(request)
+	Orders, err := h.Services.Customer().GetAllCustomerCars(context.Background(),request)
 	if err != nil {
 		handleResponse(c, "error while gettign CustomerCars", http.StatusBadRequest, err.Error())
 

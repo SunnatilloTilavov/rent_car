@@ -1,10 +1,12 @@
 package handler
 
 import (
-	"fmt"
 	_ "clone/rent_car_us/api/docs"
 	"clone/rent_car_us/api/models"
+	"context"
+	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -13,7 +15,7 @@ import (
 // @Router 		/order [POST]
 // @Summary 	create a order
 // @Description This api is creates a new order and returns it's id
-// @Tags 		car
+// @Tags 		order
 // @Accept		json
 // @Produce		json
 // @Param		order body models.CreateOrder true "order"
@@ -28,7 +30,7 @@ func (h Handler) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Store.Order().CreateOrder(Order)
+	id, err := h.Services.Order().Create(context.Background(),Order)
 	if err != nil {
 		handleResponse(c, "error while creating Order", http.StatusBadRequest, err.Error())
 		return
@@ -41,7 +43,7 @@ func (h Handler) CreateOrder(c *gin.Context) {
 // @Router 		/order/{id} [PUT]
 // @Summary 	update a order
 // @Description This api is update a  order and returns it's id
-// @Tags 		car
+// @Tags 		order
 // @Accept		json
 // @Produce		json
 // @Param		id path string true "id"
@@ -66,7 +68,7 @@ func (h Handler) UpdateOrder(c *gin.Context) {
 		return
 	}
 
-	id, err := h.Store.Order().UpdateOrder(Order)
+	id, err := h.Services.Order().Update(context.Background(),Order)
 	if err != nil {
 		handleResponse(c, "error while updating Order", http.StatusBadRequest, err.Error())
 		return
@@ -110,7 +112,7 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 
 	request.Page = page
 	request.Limit = limit
-	Orders, err := h.Store.Order().GetAll(request)
+	Orders, err := h.Services.Order().GetAllOrders(context.Background(),request)
 	if err != nil {
 		handleResponse(c, "error while gettign Orders", http.StatusBadRequest, err.Error())
 
@@ -121,7 +123,7 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 }
 
 // GETBYIDORDER godoc
-// @Router 		/order [GET]
+// @Router 		/order/{id} [GET]
 // @Summary 	Get order 
 // @Description Get order
 // @Tags 		order
@@ -137,7 +139,7 @@ func (h Handler) GetOne(c *gin.Context) {
 	id := c.Param("id")
 	fmt.Println("id: ", id)
    
-	admin, err := h.Store.Order().GetOne(id)
+	admin, err := h.Services.Order().GetByIDOrder(context.Background(),id)
 	if err != nil {
 	 handleResponse(c, "error while getting admin by id", http.StatusInternalServerError, err)
 	 return
@@ -156,7 +158,7 @@ func (h Handler) GetOne(c *gin.Context) {
 		return
 	}
 
-	err = h.Store.Order().DeleteOrder(id)
+	err = h.Services.Order().Delete(context.Background(),id)
 	if err != nil {
 		handleResponse(c, "error while deleting order", http.StatusInternalServerError, err.Error())
 		return
