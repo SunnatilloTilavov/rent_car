@@ -2,6 +2,7 @@ package models
 
 type CreateCustomer struct {
 	Id          string  `json:"id"`
+	Login     string  `json:"login"`
 	First_name        string  `json:"first_name"`
 	Last_name       string  `json:"last_name"`
 	Gmail       string  `json:"gmail"`
