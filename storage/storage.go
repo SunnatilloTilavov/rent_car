@@ -21,12 +21,15 @@ type ICarStorage interface {
 }
 
 type ICustomerStorage interface {
-	Create(context.Context,models.Customer) (string, error)
-	GetByID(context.Context,string) (models.Customer, error)
+	Create(context.Context,models.CreateCustomer) (string, error)
+	GetByID(context.Context,string) (models.GetCustomer, error)
 	GetAllCustomers(context.Context,models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
 	GetAllCustomerCars(context.Context,models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error)
-	Update(context.Context,models.Customer) (string, error)
+	Update(context.Context,models.GetCustomer) (string, error)
 	Delete(context.Context,string) error
+
+	UpdatePassword(context.Context,models.PasswordCustomer) (string, error)
+
 	///GetCustomer(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
 
 }

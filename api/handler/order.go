@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// @Security ApiKeyAuth
 // CreateOrder godoc
 // @Router 		/order [POST]
 // @Summary 	create a order
@@ -26,19 +27,20 @@ import (
 func (h Handler) CreateOrder(c *gin.Context) {
 	Order := models.CreateOrder{}
 	if err := c.ShouldBindJSON(&Order); err != nil {
-		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
 
 	id, err := h.Services.Order().Create(context.Background(),Order)
 	if err != nil {
-		handleResponse(c, "error while creating Order", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while creating Order", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	handleResponse(c, "Created successfully", http.StatusOK, id)
+	handleResponse(c,  h.Log,"Created successfully", http.StatusOK, id)
 }
 
+// @Security ApiKeyAuth
 // UpdateOrder godoc
 // @Router 		/order/{id} [PUT]
 // @Summary 	update a order
@@ -56,7 +58,7 @@ func (h Handler) UpdateOrder(c *gin.Context) {
 	Order := models.GetOrder{}
 
 	if err := c.ShouldBindJSON(&Order); err != nil {
-		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -64,18 +66,20 @@ func (h Handler) UpdateOrder(c *gin.Context) {
 
 	err := uuid.Validate(Order.Id)
 	if err != nil {
-		handleResponse(c, "error while validating Order id,id: "+Order.Id, http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while validating Order id,id: "+Order.Id, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	id, err := h.Services.Order().Update(context.Background(),Order)
 	if err != nil {
-		handleResponse(c, "error while updating Order", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while updating Order", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	handleResponse(c, "Updated successfully", http.StatusOK, id)
+	handleResponse(c, h.Log, "Updated successfully", http.StatusOK, id)
 }
+
+// @Security ApiKeyAuth
 // GETALLOrders godoc
 // @Router 		/order [GET]
 // @Summary 	Get order list
@@ -99,12 +103,12 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 
 	page, err := ParsePageQueryParam(c)
 	if err != nil {
-		handleResponse(c, "error while parsing page", http.StatusBadRequest, err.Error())
+		handleResponse(c,  h.Log,"error while parsing page", http.StatusBadRequest, err.Error())
 		return
 	}
 	limit, err := ParseLimitQueryParam(c)
 	if err != nil {
-		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
 	}
 	fmt.Println("page: ", page)
@@ -114,14 +118,15 @@ func (h Handler) GetAllOrders(c *gin.Context) {
 	request.Limit = limit
 	Orders, err := h.Services.Order().GetAllOrders(context.Background(),request)
 	if err != nil {
-		handleResponse(c, "error while gettign Orders", http.StatusBadRequest, err.Error())
+		handleResponse(c,  h.Log,"error while gettign Orders", http.StatusBadRequest, err.Error())
 
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, Orders)
+	handleResponse(c, h.Log, "", http.StatusOK, Orders)
 }
 
+// @Security ApiKeyAuth
 // GETBYIDORDER godoc
 // @Router 		/order/{id} [GET]
 // @Summary 	Get order 
@@ -141,10 +146,10 @@ func (h Handler) GetOne(c *gin.Context) {
    
 	admin, err := h.Services.Order().GetByIDOrder(context.Background(),id)
 	if err != nil {
-	 handleResponse(c, "error while getting admin by id", http.StatusInternalServerError, err)
+	 handleResponse(c, h.Log, "error while getting admin by id", http.StatusInternalServerError, err)
 	 return
 	}
-	handleResponse(c, "", http.StatusOK, admin)
+	handleResponse(c, h.Log, "", http.StatusOK, admin)
    }
 
    func (h Handler) DeleteOrder(c *gin.Context) {
@@ -154,15 +159,15 @@ func (h Handler) GetOne(c *gin.Context) {
 
 	err := uuid.Validate(id)
 	if err != nil {
-		handleResponse(c, "error while validating id", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while validating id", http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err = h.Services.Order().Delete(context.Background(),id)
 	if err != nil {
-		handleResponse(c, "error while deleting order", http.StatusInternalServerError, err.Error())
+		handleResponse(c, h.Log, "error while deleting order", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, id)
+	handleResponse(c, h.Log, "", http.StatusOK, id)
 }

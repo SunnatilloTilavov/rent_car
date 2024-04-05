@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS customers (
     deleted_at INTEGER DEFAULT 0
 )
 
+
 CREATE UNIQUE INDEX index_phone
 ON Customers(phone,deleted_at);
 

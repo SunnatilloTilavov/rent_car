@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"clone/rent_car_us/api"
 	"clone/rent_car_us/config"
+	"clone/rent_car_us/pkg/logger"
 	"clone/rent_car_us/service"
 	"clone/rent_car_us/storage/postgres"
 )
@@ -19,7 +20,8 @@ func main() {
 	defer store.CloseDB()
 
 	services := service.New(store)
-	c := api.New(services,store)
+	log := logger.New(cfg.ServiceName)
+	c := api.New(services,log)
 
 	fmt.Println("programm is running on localhost:8080...")
 	c.Run(":8080")

@@ -1,6 +1,23 @@
 package models
 
-type Customer struct {
+type CreateCustomer struct {
+	Id          string  `json:"id"`
+	First_name        string  `json:"first_name"`
+	Last_name       string  `json:"last_name"`
+	Gmail       string  `json:"gmail"`
+	Phone     string  `json:"phone"`
+	CreatedAt   string  `json:"createdAt"`
+	UpdatedAt   string  `json:"updatedAt"`
+	Password string `json:"password"`
+}
+
+type PasswordCustomer struct{
+	Phone     string  `json:"phone"`
+	NewPassword string `json:"Newpassword"`
+	OldPassword string `json:"Oldpassword"`
+}
+
+type GetCustomer struct {
 	Id          string  `json:"id"`
 	First_name        string  `json:"first_name"`
 	Last_name       string  `json:"last_name"`
@@ -9,6 +26,7 @@ type Customer struct {
 	CreatedAt   string  `json:"createdAt"`
 	UpdatedAt   string  `json:"updatedAt"`
 }
+
 
 type GetAllCustomersResponse struct {
 	Customer  []GetAllCustomer `json:"customer"`

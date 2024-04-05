@@ -71,7 +71,7 @@ func (o *orderRepo) UpdateOrder(ctx context.Context,order models.GetOrder) (stri
 func (o *orderRepo) GetOne(ctx context.Context,orderID string) (models.GetOrder, error) {
 	order := models.GetOrder{
 		Car:      models.Car{},
-		Customer: models.Customer{},
+		Customer: models.GetCustomer{},
 	}
 
 	query := `SELECT
@@ -154,7 +154,7 @@ fmt.Println("filter:", filter)
 		var (
 			order = models.GetOrder{
 			Car: models.Car{},
-			Customer: models.Customer{},
+			Customer: models.GetCustomer{},
 		}
 		 updateAt sql.NullString
 	)	
@@ -191,8 +191,6 @@ fmt.Println("filter:", filter)
 	 }
    return resp,nil
 }
-
-
 
 
 func (o *orderRepo) DeleteOrder(ctx context.Context,id string) error {

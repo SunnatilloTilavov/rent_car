@@ -1,13 +1,15 @@
 package postgres
 
 import (
-	"database/sql"
-	"fmt"
 	"clone/rent_car_us/api/models"
 	"clone/rent_car_us/pkg"
+	"context"
+	"database/sql"
+	"fmt"
+"errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"context"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type customerRepo struct {
@@ -28,22 +30,28 @@ get (id) body,err
 getAll (search) []body,count,err
 */
 
-func (c *customerRepo) Create(ctx context.Context,customer models.Customer) (string, error) {
+func (c *customerRepo) Create(ctx context.Context, customer models.CreateCustomer) (string, error) {
 
 	id := uuid.New()
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(customer.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return "password hashing error", err
+	}
 
 	query := ` INSERT INTO customers (
 		id ,       
 		first_name,
 		last_name ,
 		gmail ,    
-		phone     )
-		VALUES($1,$2,$3,$4,$5) `
+		phone,
+		password     )
+		VALUES($1,$2,$3,$4,$5,$6) `
 
-	_, err := c.db.Exec(ctx,query,
+	_, err = c.db.Exec(ctx, query,
 		id.String(),
 		customer.First_name, customer.Last_name,
-		customer.Gmail, customer.Phone)
+		customer.Gmail, customer.Phone, hashedPassword)
 	if err != nil {
 		return "", err
 	}
@@ -51,7 +59,7 @@ func (c *customerRepo) Create(ctx context.Context,customer models.Customer) (str
 	return id.String(), nil
 }
 
-func (c *customerRepo) Update(ctx context.Context,customer models.Customer) (string, error) {
+func (c *customerRepo) Update(ctx context.Context, customer models.GetCustomer) (string, error) {
 
 	query := ` UPDATE customers set
 	        first_name=$1,
@@ -62,9 +70,9 @@ func (c *customerRepo) Update(ctx context.Context,customer models.Customer) (str
 		WHERE id = $5 
 	`
 
-	_, err := c.db.Exec(ctx,query,
+	_, err := c.db.Exec(ctx, query,
 		customer.First_name, customer.Last_name,
-		customer.Gmail, customer.Phone,customer.Id)
+		customer.Gmail, customer.Phone, customer.Id)
 
 	if err != nil {
 		return "", err
@@ -73,7 +81,7 @@ func (c *customerRepo) Update(ctx context.Context,customer models.Customer) (str
 	return customer.Id, nil
 }
 
-func (c *customerRepo) GetAllCustomers(ctx context.Context,req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error) {
+func (c *customerRepo) GetAllCustomers(ctx context.Context, req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error) {
 	var (
 		resp   = models.GetAllCustomersResponse{}
 		filter = ""
@@ -86,7 +94,7 @@ func (c *customerRepo) GetAllCustomers(ctx context.Context,req models.GetAllCust
 	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter:", filter)
 
-	query:=`SELECT
+	query := `SELECT
     cu.id AS customer_id,
     cu.first_name AS customer_first_name,
     cu.last_name AS customer_last_name,
@@ -123,11 +131,11 @@ GROUP BY
     o.paid,
     o.amount`
 
-	rows, err := c.db.Query(ctx,query)
+	rows, err := c.db.Query(ctx, query)
 	if err != nil {
 		return resp, err
 	}
-     defer rows.Close()
+	defer rows.Close()
 
 	for rows.Next() {
 		var (
@@ -146,32 +154,32 @@ GROUP BY
 			&customer.CarsCount,
 			&customer.CreatedAt,
 			&updateAt,
-			&customer.Order.Id,       
-			&customer.Order.FromDate,       
-			&customer.Order.ToDate,       
-			&customer.Order.Status,       
-			&customer.Order.Paid,       
-			&customer.Order.Amount);err != nil {
+			&customer.Order.Id,
+			&customer.Order.FromDate,
+			&customer.Order.ToDate,
+			&customer.Order.Status,
+			&customer.Order.Paid,
+			&customer.Order.Amount); err != nil {
 			return resp, err
 		}
 		customer.UpdatedAt = pkg.NullStringToString(updateAt)
-		resp.Customer = append(resp.Customer,customer)
+		resp.Customer = append(resp.Customer, customer)
 	}
-	if err = rows.Err();err != nil {
-		return resp,err
+	if err = rows.Err(); err != nil {
+		return resp, err
 	}
 	countQuery := `Select count(*) from customers`
-	err = c.db.QueryRow(ctx,countQuery).Scan(&resp.Count)
+	err = c.db.QueryRow(ctx, countQuery).Scan(&resp.Count)
 	if err != nil {
-		return resp,err
+		return resp, err
 	}
 	return resp, nil
 }
 
-func (c *customerRepo) GetByID(ctx context.Context,id string) (models.Customer, error) {
-	customer := models.Customer{}
+func (c *customerRepo) GetByID(ctx context.Context, id string) (models.GetCustomer, error) {
+	customer := models.GetCustomer{}
 
-	if err := c.db.QueryRow(ctx,`select id,
+	if err := c.db.QueryRow(ctx, `select id,
 	first_name,
 	last_name,gmail,
 	phone
@@ -181,18 +189,18 @@ func (c *customerRepo) GetByID(ctx context.Context,id string) (models.Customer, 
 		&customer.Last_name,
 		&customer.Gmail,
 		&customer.Phone); err != nil {
-		return models.Customer{}, err
+		return models.GetCustomer{}, err
 	}
 	return customer, nil
 }
-func (c *customerRepo) Delete(ctx context.Context,id string) error {
+func (c *customerRepo) Delete(ctx context.Context, id string) error {
 
 	query := ` UPDATE customers set
 			deleted_at = date_part('epoch', CURRENT_TIMESTAMP)::int
 		WHERE id = $1 
 	`
 
-	_, err := c.db.Exec(ctx,query, id)
+	_, err := c.db.Exec(ctx, query, id)
 
 	if err != nil {
 		return err
@@ -201,9 +209,7 @@ func (c *customerRepo) Delete(ctx context.Context,id string) error {
 	return nil
 }
 
-
-
-func (c *customerRepo) GetAllCustomerCars(ctx context.Context,req models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error) {
+func (c *customerRepo) GetAllCustomerCars(ctx context.Context, req models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error) {
 	var (
 		resp   = models.GetAllCustomerCarsResponse{}
 		filter = ""
@@ -220,7 +226,7 @@ func (c *customerRepo) GetAllCustomerCars(ctx context.Context,req models.GetAllC
 	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
 	fmt.Println("filter:", filter)
 
-	query:=`Select 
+	query := `Select 
 	cu.id as customer_id,
 	ca.name as car_name,
 	o.created_ad as creatad_at,
@@ -228,33 +234,58 @@ func (c *customerRepo) GetAllCustomerCars(ctx context.Context,req models.GetAllC
 	From customers cu JOIN orders o ON  cu.id = o.customer_id Join cars ca  ON ca.id=o.car_id 
 	`
 
-	rows, err := c.db.Query(ctx,query + filter + ``)
+	rows, err := c.db.Query(ctx, query+filter+``)
 	if err != nil {
 		return resp, err
 	}
-     defer rows.Close()
+	defer rows.Close()
 
 	for rows.Next() {
 		var (
-			customer = models.GetAllCustomerCars{
-			}
+			customer = models.GetAllCustomerCars{}
 		)
 		if err := rows.Scan(
 			&customer.Id,
 			&customer.Name,
 			&customer.CreatedAt,
-			&customer.Amount);err != nil {
+			&customer.Amount); err != nil {
 			return resp, err
 		}
-		resp.Customer = append(resp.Customer,customer)
+		resp.Customer = append(resp.Customer, customer)
 	}
-	if err = rows.Err();err != nil {
-		return resp,err
+	if err = rows.Err(); err != nil {
+		return resp, err
 	}
 	countQuery := `Select count(*) from customers`
-	err = c.db.QueryRow(context.Background(),countQuery).Scan(&resp.Count)
+	err = c.db.QueryRow(context.Background(), countQuery).Scan(&resp.Count)
 	if err != nil {
-		return resp,err
+		return resp, err
 	}
 	return resp, nil
+}
+
+
+func (c *customerRepo) UpdatePassword(ctx context.Context, customer models.PasswordCustomer) (string, error) {
+	hashedNewPassword, err := bcrypt.GenerateFromPassword([]byte(customer.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.New("error hashing new password")
+	}
+
+	var currentPassword string
+	err = c.db.QueryRow(ctx, `SELECT password FROM customers WHERE phone = $1`, customer.Phone).Scan(&currentPassword)
+	if err != nil {
+		return "", errors.New("customer not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(currentPassword), []byte(customer.OldPassword))
+	if err != nil {
+		return "", errors.New("invalid old password")
+	}
+
+	_, err = c.db.Exec(ctx, `UPDATE customers SET password = $1 WHERE phone = $2`, hashedNewPassword, customer.Phone)
+	if err != nil {
+		return "", errors.New("error updating password")
+	}
+
+	return "Password updated successfully", nil
 }

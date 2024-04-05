@@ -1,18 +1,18 @@
 package handler
 
 import (
-	_ "clone/rent_car_us/api/docs"
 	"clone/rent_car_us/api/models"
 	// "clone/rent_car_us/pkg/check"
+	_ "clone/rent_car_us/api/docs"
 	"context"
 	"fmt"
 	"net/http"
 	// "strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
+// @Security ApiKeyAuth
 // CreateCar godoc
 // @Router 		/car [POST]
 // @Summary 	create a car
@@ -29,9 +29,10 @@ func (h Handler) CreateCar(c *gin.Context) {
 	car := models.Car{}
 
 	if err := c.ShouldBindJSON(&car); err != nil {
-		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log,"error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
+	
 	// if err := check.ValidateCarYear(car.Year); err != nil {
 	// 	handleResponse(c, "error while validating car year, year: "+strconv.Itoa(car.Year), http.StatusBadRequest, err.Error())
 
@@ -40,12 +41,14 @@ func (h Handler) CreateCar(c *gin.Context) {
 
 	id, err := h.Services.Car().Create(context.Background(),car)
 	if err != nil {
-		handleResponse(c, "error while creating car", http.StatusBadRequest, err.Error())
+		handleResponse(c,h.Log, "error while creating car", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	handleResponse(c, "Created successfully", http.StatusOK, id)
+	handleResponse(c,h.Log, "Created successfully", http.StatusOK, id)
 }
+
+// @Security ApiKeyAuth
 // Updatecar godoc
 // @Router 		/car/{id} [PUT]
 // @Summary 	update a car
@@ -63,7 +66,7 @@ func (h Handler) UpdateCar(c *gin.Context) {
 	car := models.Car{}
 
 	if err := c.ShouldBindJSON(&car); err != nil {
-		handleResponse(c, "error while reading request body", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log,"error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
 	// if err := check.ValidateCarYear(car.Year); err != nil {
@@ -74,19 +77,20 @@ func (h Handler) UpdateCar(c *gin.Context) {
 
 	err := uuid.Validate(car.Id)
 	if err != nil {
-		handleResponse(c, "error while validating car id,id: "+car.Id, http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while validating car id,id: "+car.Id, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	id, err := h.Services.Car().Update(context.Background(),car)
 	if err != nil {
-		handleResponse(c, "error while updating car", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while updating car", http.StatusBadRequest, err.Error())
 		return
 	}
 
-	handleResponse(c, "Updated successfully", http.StatusOK, id)
+	handleResponse(c, h.Log, "Updated successfully", http.StatusOK, id)
 }
 
+// @Security ApiKeyAuth
 // GETALLCARS godoc
 // @Router 		/car [GET]
 // @Summary 	Get user list
@@ -110,12 +114,12 @@ func (h Handler) GetAllCars(c *gin.Context) {
 
 	page, err := ParsePageQueryParam(c)
 	if err != nil {
-		handleResponse(c, "error while parsing page", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while parsing page", http.StatusBadRequest, err.Error())
 		return
 	}
 	limit, err := ParseLimitQueryParam(c)
 	if err != nil {
-		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
 	}
 	fmt.Println("page: ", page)
@@ -125,14 +129,15 @@ func (h Handler) GetAllCars(c *gin.Context) {
 	request.Limit = limit
 	cars, err := h.Services.Car().GetAllCars(context.Background(),request)
 	if err != nil {
-		handleResponse(c, "error while gettign cars", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while gettign cars", http.StatusBadRequest, err.Error())
 
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, cars)
+	handleResponse(c, h.Log, "", http.StatusOK, cars)
 }
 
+// @Security ApiKeyAuth
 // Deletecar godoc
 // @Router 		/car/{id} [DELETE]
 // @Summary 	delete a car
@@ -152,19 +157,20 @@ func (h Handler) DeleteCar(c *gin.Context) {
 
 	err := uuid.Validate(id)
 	if err != nil {
-		handleResponse(c, "error while validating id", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while validating id", http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err = h.Services.Car().Delete(context.Background(),id)
 	if err != nil {
-		handleResponse(c, "error while deleting car", http.StatusInternalServerError, err.Error())
+		handleResponse(c, h.Log, "error while deleting car", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, id)
+	handleResponse(c, h.Log, "", http.StatusOK, id)
 }
 
+// @Security ApiKeyAuth
 // GETBYIDcar godoc
 // @Router 		/car{id}  [GET]
 // @Summary 	Get user 
@@ -184,15 +190,15 @@ func (h Handler) GetByIDCar(c *gin.Context) {
    
 	admin, err := h.Services.Car().GetByIDCar(context.Background(),id)
 	if err != nil {
-	 handleResponse(c, "error while getting admin by id", http.StatusInternalServerError, err)
+	 handleResponse(c, h.Log, "error while getting admin by id", http.StatusInternalServerError, err)
 	 return
 	}
-	handleResponse(c, "", http.StatusOK, admin)
+	handleResponse(c, h.Log, "", http.StatusOK, admin)
    }
 
 
-
-   // GETALLCARSFREE godoc
+// @Security ApiKeyAuth
+// GETALLCARSFREE godoc
 // @Router 		/car/free [GET]
 // @Summary 	Get user list
 // @Description Get user list
@@ -214,12 +220,12 @@ func (h Handler) GetAllCarsFree(c *gin.Context) {
 
 	page, err := ParsePageQueryParam(c)
 	if err != nil {
-		handleResponse(c, "error while parsing page", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while parsing page", http.StatusBadRequest, err.Error())
 		return
 	}
 	limit, err := ParseLimitQueryParam(c)
 	if err != nil {
-		handleResponse(c, "error while parsing limit", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while parsing limit", http.StatusBadRequest, err.Error())
 		return
 	}
 	fmt.Println("page: ", page)
@@ -229,10 +235,10 @@ func (h Handler) GetAllCarsFree(c *gin.Context) {
 	request.Limit = limit
 	cars, err := h.Services.Car().GetAllCarsFree(context.Background(),request)
 	if err != nil {
-		handleResponse(c, "error while gettign cars", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while gettign cars", http.StatusBadRequest, err.Error())
 
 		return
 	}
 
-	handleResponse(c, "", http.StatusOK, cars)
+	handleResponse(c,  h.Log,"", http.StatusOK, cars)
 }

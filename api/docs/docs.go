@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/car": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user list",
                 "consumes": [
                     "application/json"
@@ -76,6 +81,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is creates a new car and returns it's id",
                 "consumes": [
                     "application/json"
@@ -128,6 +138,11 @@ const docTemplate = `{
         },
         "/car/free": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user list",
                 "consumes": [
                     "application/json"
@@ -189,6 +204,11 @@ const docTemplate = `{
         },
         "/car/{id}": {
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is update a  car and returns it's id",
                 "consumes": [
                     "application/json"
@@ -246,6 +266,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is delete a  car and returns it's id",
                 "consumes": [
                     "application/json"
@@ -296,6 +321,11 @@ const docTemplate = `{
         },
         "/car{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user",
                 "consumes": [
                     "application/json"
@@ -346,7 +376,12 @@ const docTemplate = `{
         },
         "/customer": {
             "get": {
-                "description": "Get customer",
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get customer list",
                 "consumes": [
                     "application/json"
                 ],
@@ -356,21 +391,32 @@ const docTemplate = `{
                 "tags": [
                     "customer"
                 ],
-                "summary": "Get customer",
+                "summary": "Get customer list",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "page",
+                        "name": "page",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search",
+                        "name": "search",
+                        "in": "path"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Customer"
+                            "$ref": "#/definitions/models.GetCustomer"
                         }
                     },
                     "400": {
@@ -394,6 +440,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is creates a new customer and returns it's id",
                 "consumes": [
                     "application/json"
@@ -412,7 +463,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Customer"
+                            "$ref": "#/definitions/models.CreateCustomer"
                         }
                     }
                 ],
@@ -420,7 +471,64 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Customer"
+                            "$ref": "#/definitions/models.CreateCustomer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/customer/password": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "This api is update paswor a  customer and returns succ",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Password"
+                ],
+                "summary": "update password",
+                "parameters": [
+                    {
+                        "description": "customer",
+                        "name": "customer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PasswordCustomer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
                         }
                     },
                     "400": {
@@ -445,7 +553,65 @@ const docTemplate = `{
             }
         },
         "/customer/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get customer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customer"
+                ],
+                "summary": "Get customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetCustomer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is update a  customer and returns it's id",
                 "consumes": [
                     "application/json"
@@ -471,7 +637,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Customer"
+                            "$ref": "#/definitions/models.GetCustomer"
                         }
                     }
                 ],
@@ -479,7 +645,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Customer"
+                            "$ref": "#/definitions/models.GetCustomer"
                         }
                     },
                     "400": {
@@ -503,6 +669,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is delete a  customer and returns it's id",
                 "consumes": [
                     "application/json"
@@ -553,6 +724,11 @@ const docTemplate = `{
         },
         "/customercars": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user list",
                 "consumes": [
                     "application/json"
@@ -620,6 +796,11 @@ const docTemplate = `{
         },
         "/order": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get order list",
                 "consumes": [
                     "application/json"
@@ -679,6 +860,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is creates a new order and returns it's id",
                 "consumes": [
                     "application/json"
@@ -731,6 +917,11 @@ const docTemplate = `{
         },
         "/order/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get order",
                 "consumes": [
                     "application/json"
@@ -779,6 +970,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "This api is update a  order and returns it's id",
                 "consumes": [
                     "application/json"
@@ -867,9 +1063,35 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.CreateCustomer": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
                 },
-                "year": {
-                    "type": "integer"
+                "first_name": {
+                    "type": "string"
+                },
+                "gmail": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
@@ -899,7 +1121,24 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Customer": {
+        "models.GetAllCustomerCarsRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "search": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GetCustomer": {
             "type": "object",
             "properties": {
                 "createdAt": {
@@ -925,23 +1164,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.GetAllCustomerCarsRequest": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "search": {
-                    "type": "string"
-                }
-            }
-        },
         "models.GetOrder": {
             "type": "object",
             "properties": {
@@ -955,7 +1177,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "customer": {
-                    "$ref": "#/definitions/models.Customer"
+                    "$ref": "#/definitions/models.GetCustomer"
                 },
                 "from_date": {
                     "type": "string"
@@ -977,6 +1199,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.PasswordCustomer": {
+            "type": "object",
+            "properties": {
+                "Newpassword": {
+                    "type": "string"
+                },
+                "Oldpassword": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Response": {
             "type": "object",
             "properties": {
@@ -988,6 +1224,13 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

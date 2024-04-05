@@ -16,7 +16,7 @@ func NewCustomerService(storage storage.IStorage) CustomerService {
 		storage: storage,
 	}
 }
-func (u CustomerService) Create(ctx context.Context, Customer models.Customer) (string, error) {
+func (u CustomerService) Create(ctx context.Context, Customer models.CreateCustomer) (string, error) {
 
 	pKey, err := u.storage.Customer().Create(ctx, Customer)
 	if err != nil {
@@ -27,7 +27,7 @@ func (u CustomerService) Create(ctx context.Context, Customer models.Customer) (
 	return pKey, nil
 }
 
-func (u CustomerService) Update(ctx context.Context, Customer models.Customer) (string, error) {
+func (u CustomerService) Update(ctx context.Context, Customer models.GetCustomer) (string, error) {
 
 	pKey, err := u.storage.Customer().Update(ctx, Customer)
 	if err != nil {
@@ -60,11 +60,11 @@ func (u CustomerService) GetAllCustomers(ctx context.Context, Customer models.Ge
 	return pKey, nil
 }
 
-func (u CustomerService) GetByIDCustomer(ctx context.Context, Id string) (models.Customer, error) {
+func (u CustomerService) GetByIDCustomer(ctx context.Context, Id string) (models.GetCustomer, error) {
 	pKey, err := u.storage.Customer().GetByID(ctx, Id)
 	if err != nil {
 		fmt.Println("ERROR in service layer while getbyID Customer", err.Error())
-		return models.Customer{}, err
+		return models.GetCustomer{}, err
 	}
 
 	return pKey, nil
@@ -75,6 +75,18 @@ func (u CustomerService) GetAllCustomerCars(ctx context.Context,Customer models.
 	if err != nil {
 		fmt.Println("ERROR in service layer while getalling Customer", err.Error())
 		return models.GetAllCustomerCarsResponse{}, err
+	}
+
+	return pKey, nil
+}
+
+
+func (u CustomerService) UpdatePassword(ctx context.Context, Customer models.PasswordCustomer) (string, error) {
+
+	pKey, err := u.storage.Customer().UpdatePassword(ctx, Customer)
+	if err != nil {
+		fmt.Println("ERROR in service layer while updating Customer", err.Error())
+		return "", err
 	}
 
 	return pKey, nil

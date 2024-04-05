@@ -3,7 +3,7 @@ package models
 type GetOrder struct {
 	Id        string   `json:"id"`
 	Car       Car      `json:"car"`
-	Customer  Customer `json:"customer"`
+	Customer  GetCustomer `json:"customer"`
 	FromDate  string   `json:"from_date"`
 	ToDate    string   `json:"to_date"`
 	Status    string   `json:"status"`

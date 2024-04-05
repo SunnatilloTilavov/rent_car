@@ -154,17 +154,14 @@ func (c *carRepo) GetByID(ctx context.Context,id string) (models.Car, error) {
 	car := models.Car{}
 	if err := c.db.QueryRow(ctx,`select id,name,
 	brand,model,hourse_power,
-	colour,engine_cap,created_at,
-	year from cars where id = $1`, id).Scan(
+	colour,engine_cap from cars where id = $1`, id).Scan(
 		&car.Id,
 		&car.Name,
 		&car.Brand,
 		&car.Model,
 		&car.HoursePower,
 		&car.Colour,
-		&car.EngineCap,
-		&car.CreatedAt,
-		
+		&car.EngineCap,	
 	); err != nil {
 		return models.Car{}, err
 	}
