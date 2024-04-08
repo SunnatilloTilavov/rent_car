@@ -32,6 +32,8 @@ definitions:
         type: string
       last_name:
         type: string
+      login:
+        type: string
       password:
         type: string
       phone:
@@ -107,6 +109,13 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.GetPassword:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
   models.PasswordCustomer:
     properties:
       Newpassword:
@@ -130,6 +139,42 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /Login:
+    put:
+      consumes:
+      - application/json
+      description: This api is login
+      parameters:
+      - description: password
+        in: body
+        name: Password
+        required: true
+        schema:
+          $ref: '#/definitions/models.GetPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetPassword'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Login
+      tags:
+      - Password
   /car:
     get:
       consumes:
@@ -546,10 +591,10 @@ paths:
       tags:
       - customer
   /customer/password:
-    put:
+    patch:
       consumes:
       - application/json
-      description: This api is update paswor a  customer and returns succ
+      description: This api is update password
       parameters:
       - description: customer
         in: body
@@ -563,7 +608,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Response'
+            $ref: '#/definitions/models.PasswordCustomer'
         "400":
           description: Bad Request
           schema:

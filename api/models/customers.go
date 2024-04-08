@@ -18,6 +18,11 @@ type PasswordCustomer struct{
 	OldPassword string `json:"Oldpassword"`
 }
 
+type GetPassword struct{
+	Phone     string  `json:"phone"`
+	Password string `json:"password"`
+}
+
 type GetCustomer struct {
 	Id          string  `json:"id"`
 	First_name        string  `json:"first_name"`

@@ -27,7 +27,7 @@ type ICustomerStorage interface {
 	GetAllCustomerCars(context.Context,models.GetAllCustomerCarsRequest) (models.GetAllCustomerCarsResponse, error)
 	Update(context.Context,models.GetCustomer) (string, error)
 	Delete(context.Context,string) error
-
+	GetPassword(ctx context.Context, phone string) (string, error)
 	UpdatePassword(context.Context,models.PasswordCustomer) (string, error)
 
 	///GetCustomer(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)

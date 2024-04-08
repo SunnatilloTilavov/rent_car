@@ -264,3 +264,6 @@ func (c carRepo) GetAllCarsFree(ctx context.Context,req models.GetAllCarsRequest
 	}
 	return resp, nil
 }
+
+
+

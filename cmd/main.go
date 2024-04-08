@@ -12,6 +12,8 @@ import (
 
 func main() {
 	cfg := config.Load()
+	
+	log := logger.New(cfg.ServiceName)
 	store, err := postgres.New(context.Background(), cfg)
 	if err != nil {
 		fmt.Println("error while connecting db, err: ", err)
@@ -19,8 +21,7 @@ func main() {
 	}
 	defer store.CloseDB()
 
-	services := service.New(store)
-	log := logger.New(cfg.ServiceName)
+	services := service.New(store,log)
 	c := api.New(services,log)
 
 	fmt.Println("programm is running on localhost:8080...")

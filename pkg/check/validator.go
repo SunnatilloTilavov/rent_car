@@ -3,8 +3,7 @@ package check
 import (
 	"errors"
 	"time"
-	"strings"
-	"unicode"
+	"regexp"
 )
 
 func ValidateCarYear(year int) error {
@@ -13,56 +12,51 @@ func ValidateCarYear(year int) error {
 	}
 	return nil
 }
-func ValidateEmail(gmail string)error{
-atCount:=strings.Count(gmail,"@")
-dotCount:=strings.Count(gmail,".")
-if atCount==1&&dotCount==1&&(strings.HasSuffix(gmail,"@gmail.com")||strings.HasSuffix(gmail,"@mail.ru") ){return nil}else{
-	return errors.New("gmail is not validet")
-}
-}
 
-func ValidatePhone(phone string)error{
-	plusCount:=strings.Count(phone,"+")
-	if plusCount==1&&strings.HasPrefix(phone,"+998")&&len(phone)==13{
-		return nil
-	}else{
-		return errors.New("number is not validet")
-	}
-	}
+
 	
+	func ValidateEmail(email string) error {
+		emailRegex := `^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|ru)$`
+		regex := regexp.MustCompile(emailRegex)
+		if regex.MatchString(email) {
+			return nil
+		} else {
+			return errors.New("email is not valid")
+		}
+	}
 
+	
+	
 	func ValidatePassword(password string) error {
-		if len(password) < 8 {
-			return errors.New("password length must be at least 8 characters")
+		lowercaseRegex := `[a-z]`
+		hasLowercase, _ := regexp.MatchString(lowercaseRegex, password)
+		uppercaseRegex := `[A-Z]`
+		hasUppercase, _ := regexp.MatchString(uppercaseRegex, password)
+		digitRegex := `[0-9]`
+		hasDigit, _ := regexp.MatchString(digitRegex, password)
+		symbolRegex := `[!@#$%^&*()-_+=~\[\]{}|\\:;"'<>,.?\/]`
+		hasSymbol, _ := regexp.MatchString(symbolRegex, password)
+	
+		if hasLowercase && hasUppercase && hasDigit && hasSymbol && len(password) >= 8 {
+			return nil
 		}
 	
-		var hasUppercase, hasLowercase, hasDigit, hasSymbol bool
-	
-		for _, char := range password {
-			switch {
-			case unicode.IsUpper(char):
-				hasUppercase = true
-			case unicode.IsLower(char):
-				hasLowercase = true
-			case unicode.IsNumber(char):
-				hasDigit = true
-			case unicode.IsPunct(char) || unicode.IsSymbol(char):
-				hasSymbol = true
-			}
-		}
-	
-		if !hasUppercase {
-			return errors.New("password must contain at least one uppercase letter")
-		}
-		if !hasLowercase {
-			return errors.New("password must contain at least one lowercase letter")
-		}
-		if !hasDigit {
-			return errors.New("password must contain at least one digit")
-		}
-		if !hasSymbol {
-			return errors.New("password must contain at least one symbol")
-		}
-	
-		return nil
+		return errors.New("password does not meet the criteria")
 	}
+	
+	
+	
+	
+	func ValidatePhone(phone string) error {
+		
+		phoneRegex := `^\+998\d{9}$`
+	
+		regex := regexp.MustCompile(phoneRegex)
+	
+		if regex.MatchString(phone) {
+			return nil
+		} else {
+			return errors.New("phone number is not valid")
+		}
+	}
+	

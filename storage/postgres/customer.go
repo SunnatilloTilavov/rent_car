@@ -289,3 +289,28 @@ func (c *customerRepo) UpdatePassword(ctx context.Context, customer models.Passw
 
 	return "Password updated successfully", nil
 }
+
+
+
+func (c *customerRepo) GetPassword (ctx context.Context, phone string) (string, error) {
+	var hashedPass string
+
+	query := `SELECT password
+	FROM customers
+	WHERE phone = $1 AND deleted_at = 0`
+
+	err := c.db.QueryRow(ctx, query, phone).Scan(&hashedPass)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", errors.New("incorrect phone")
+		} else {
+			return "", err
+		}
+	}
+
+	return hashedPass, nil
+}
+
+
+

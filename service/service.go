@@ -2,6 +2,7 @@ package service
 
 import (
 	"clone/rent_car_us/storage"
+	"clone/rent_car_us/pkg/logger"
 )
 
 type IServiceManager interface {
@@ -14,13 +15,15 @@ type Service struct {
 	carService carService
 	CustomerService CustomerService
 	OrderService OrderService
+	logger logger.ILogger
 }
 
-func New(storage storage.IStorage) Service {
+func New(storage storage.IStorage,log logger.ILogger) Service {
 	services := Service{}
-	services.carService = NewCarService(storage)
-	services.CustomerService = NewCustomerService(storage)
-	services.OrderService = NewOrderService(storage)
+	services.carService = NewCarService(storage,log)
+	services.CustomerService = NewCustomerService(storage,log)
+	services.OrderService = NewOrderService(storage,log)
+	services.logger=log
 
 	return services
 }
