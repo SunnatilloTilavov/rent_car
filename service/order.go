@@ -72,3 +72,16 @@ func (u OrderService) GetAllOrders(ctx context.Context, Order models.GetAllOrder
    
 	return pKey, nil
    }
+
+
+
+   func (u OrderService) UpdateStatus(ctx context.Context, Order models.GetOrder) (string, error) {
+
+	pKey, err := u.storage.Order().UpdateOrderStatus(ctx, Order)
+	if err != nil {
+		u.logger.Error("ERROR in service layer while updating Order", logger.Error(err))
+		return "", err
+	}
+
+	return pKey, nil
+}

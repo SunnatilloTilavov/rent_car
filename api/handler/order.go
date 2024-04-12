@@ -3,6 +3,8 @@ package handler
 import (
 	_ "clone/rent_car_us/api/docs"
 	"clone/rent_car_us/api/models"
+	"clone/rent_car_us/config"
+	"clone/rent_car_us/pkg/check"	
 	"context"
 	"fmt"
 	"net/http"
@@ -26,10 +28,23 @@ import (
 // @Failure		500  {object}  models.Response
 func (h Handler) CreateOrder(c *gin.Context) {
 	Order := models.CreateOrder{}
-	if err := c.ShouldBindJSON(&Order); err != nil {
+
+	data, err := getAuthInfo(c)
+	if err != nil {
+		handleResponse(c, h.Log, "error while getting auth", http.StatusUnauthorized, err.Error())
+		return
+	}
+
+
+	if err = c.ShouldBindJSON(&Order); err != nil {
 		handleResponse(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
+
+
+
+	Order.Status = config.STATUS_NEW
+	Order.CustomerId = data.UserID
 
 	id, err := h.Services.Order().Create(context.Background(),Order)
 	if err != nil {
@@ -57,14 +72,21 @@ func (h Handler) CreateOrder(c *gin.Context) {
 func (h Handler) UpdateOrder(c *gin.Context) {
 	Order := models.GetOrder{}
 
+	data, err := getAuthInfo(c)
+	if err != nil {
+		handleResponse(c, h.Log, "error while getting auth", http.StatusUnauthorized, err.Error())
+		return
+	}
+
 	if err := c.ShouldBindJSON(&Order); err != nil {
 		handleResponse(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
 		return
 	}
+	Order.Customer.Id = data.UserID
 
 	Order.Id = c.Param("id")
 
-	err := uuid.Validate(Order.Id)
+	err = uuid.Validate(Order.Id)
 	if err != nil {
 		handleResponse(c, h.Log, "error while validating Order id,id: "+Order.Id, http.StatusBadRequest, err.Error())
 		return
@@ -171,3 +193,58 @@ func (h Handler) GetOne(c *gin.Context) {
 
 	handleResponse(c, h.Log, "", http.StatusOK, id)
 }
+
+
+
+
+
+
+// @Security ApiKeyAuth
+// UpdateOrderStatus godoc
+// @Router 		/order/status/{id} [PATCH]
+// @Summary 	update a order
+// @Description This api is update a  order status and returns it's id
+// @Tags 		order
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "id"
+// @Param		status path string true "status"
+// @Success		200  {object}  models.GetOrder
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
+func (h Handler) UpdateOrderStatus(c *gin.Context) {
+	Order := models.GetOrder{}
+	Order.Id = c.Param("id")
+	Order.Status = c.Param("status")
+
+	Order.Status="finished"
+	Order.Id="eada1e00-6a53-4dcd-80c9-dd474188f7c9"
+
+
+
+	if err := check.CheckOrderStatus(Order.Status); err != nil {
+		handleResponse(c,  h.Log,"error check order status: "+Order.Status, http.StatusBadRequest,err.Error())
+		return
+	}
+
+	err := uuid.Validate(Order.Id)
+	if err != nil {
+		handleResponse(c, h.Log, "error while validating Order id,id: "+Order.Id, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	id, err := h.Services.Order().UpdateStatus(context.Background(),Order)
+	if err != nil {
+		handleResponse(c, h.Log, "error while updating Order status", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	handleResponse(c, h.Log, "Updated successfully", http.StatusOK, id)
+}
+
+
+
+
+
+

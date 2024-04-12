@@ -58,6 +58,20 @@ definitions:
       to_date:
         type: string
     type: object
+  models.CustomerLoginRequest:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  models.CustomerLoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
   models.GetAllCustomerCarsRequest:
     properties:
       id:
@@ -109,13 +123,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  models.GetPassword:
-    properties:
-      password:
-        type: string
-      phone:
-        type: string
-    type: object
   models.PasswordCustomer:
     properties:
       Newpassword:
@@ -139,42 +146,6 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
-  /Login:
-    put:
-      consumes:
-      - application/json
-      description: This api is login
-      parameters:
-      - description: password
-        in: body
-        name: Password
-        required: true
-        schema:
-          $ref: '#/definitions/models.GetPassword'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.GetPassword'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.Response'
-      security:
-      - ApiKeyAuth: []
-      summary: Login
-      tags:
-      - Password
   /car:
     get:
       consumes:
@@ -590,6 +561,40 @@ paths:
       summary: update a customer
       tags:
       - customer
+  /customer/login:
+    post:
+      consumes:
+      - application/json
+      description: Customer login
+      parameters:
+      - description: login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/models.CustomerLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.CustomerLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Customer login
+      tags:
+      - auth
   /customer/password:
     patch:
       consumes:
@@ -800,6 +805,46 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.GetOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: update a order
+      tags:
+      - order
+  /order/status/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: This api is update a  order status and returns it's id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: status
+        in: path
+        name: status
+        required: true
+        type: string
       produces:
       - application/json
       responses:

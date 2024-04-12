@@ -1,8 +1,9 @@
 module clone/rent_car_us
 
-go 1.22.1
+go 1.22.2
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-faker/faker/v4 v4.4.1
 	github.com/google/uuid v1.6.0

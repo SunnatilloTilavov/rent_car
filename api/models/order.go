@@ -37,3 +37,16 @@ type GetAllOrdersResponse struct {
 	Orders []GetOrder `json:"orders"`
 	Count int16 `json:"count"`
 }
+
+
+
+type SendMessage struct {
+	Id        string   `json:"id"`
+	CarName       string      `json:"car_name"`
+	ClientName  string `json:"client_name"`
+	FromDate  string   `json:"from_date"`
+	ToDate    string   `json:"to_date"`
+	Status    string   `json:"status"`
+	Paid      bool     `json:"payment_status"`
+	Phone     string  `json:"phone"`
+}

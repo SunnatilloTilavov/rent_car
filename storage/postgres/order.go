@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"clone/rent_car_us/pkg"
 	"github.com/google/uuid"
+	"clone/rent_car_us/tgbot"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"context"
 )
@@ -80,10 +81,8 @@ func (o *orderRepo) GetOne(ctx context.Context,orderID string) (models.GetOrder,
 		c.brand AS car_brand,
 		cu.id AS customer_id,
 		cu.first_name AS customer_first_name,
-		cu.email AS customer_email,
 		o.from_date,
 		o.to_date,
-		o.status,
 		o.payment_status,
 		o.created_at,
 		o.updated_at
@@ -99,10 +98,8 @@ func (o *orderRepo) GetOne(ctx context.Context,orderID string) (models.GetOrder,
 		&order.Car.Brand,
 		&order.Customer.Id,
 		&order.Customer.First_name,
-		&order.Customer.Gmail,
 		&order.FromDate,
 		&order.ToDate,
-		&order.Status,
 		&order.Paid,
 		&order.CreatedAt,
 		&order.UpdatedAt,
@@ -140,7 +137,6 @@ fmt.Println("filter:", filter)
 	cu.id as customer_id,
 	cu.first_name as customer_first_name,
 	cu.last_name as customer_last_name,
-	cu.gmail as customer_gmail,
 	cu.phone as customer_phone
 	From orders o JOIN cars c ON o.car_id = c.id
 	JOIN customers cu ON o.customer_id = cu.id 	`
@@ -172,7 +168,7 @@ fmt.Println("filter:", filter)
 			&order.Customer.Id,
 			&order.Customer.First_name,
 			&order.Customer.Last_name,
-			&order.Customer.Gmail,&order.Customer.Phone)
+		&order.Customer.Phone)
 		if err != nil {
          return resp,err
 		}
@@ -206,4 +202,69 @@ func (o *orderRepo) DeleteOrder(ctx context.Context,id string) error {
 		return err
 	}
 	return nil
+}
+
+
+
+
+func (o *orderRepo) UpdateOrderStatus(ctx context.Context,order models.GetOrder) (string, error) {
+	query := `update orders set 
+        status = $1
+        where id = $2`
+
+	_, err := o.db.Exec(ctx,query,
+		order.Status, 
+		order.Id)
+
+	if err != nil {
+		return "", err
+	}
+
+
+MSGinfo,err:=o.GetMSGINFO(context.Background(),order.Id)
+if err != nil {
+	return "error msginfoa", err
+}
+
+err=tgbot.SendMessageTG(MSGinfo)
+if err != nil {
+	return "", err
+}
+
+	return order.Id, nil
+}
+
+
+
+
+
+func (o *orderRepo) GetMSGINFO(ctx context.Context,orderID string) (models.SendMessage, error) {
+	order :=models.SendMessage{}
+
+	query := `SELECT
+		o.id,
+		c.name AS car_name,
+		cu.first_name AS customer_first_name,
+		o.status,
+		o.paid,
+		cu.phone
+		FROM orders o
+		JOIN cars c ON o.car_id = c.id
+		JOIN customers cu ON o.customer_id = cu.id
+		WHERE o.id = $1`
+
+	row := o.db.QueryRow(ctx,query, orderID)
+	err := row.Scan(
+		&order.Id,
+		&order.CarName,
+		&order.ClientName,
+		&order.Status,
+		&order.Paid,
+		&order.Phone,
+	)
+	if err != nil {
+		return models.SendMessage{}, err
+	}
+
+	return order, nil
 }

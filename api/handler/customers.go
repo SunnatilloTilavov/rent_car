@@ -3,8 +3,8 @@ package handler
 import (
 	_ "clone/rent_car_us/api/docs"
 	"clone/rent_car_us/api/models"
-	"clone/rent_car_us/pkg/check"
-	"clone/rent_car_us/pkg/hash"
+	"clone/rent_car_us/pkg/check"	
+	// "clone/rent_car_us/pkg/password"
 	"context"
 	"errors"
 	"fmt"
@@ -309,50 +309,3 @@ func (h Handler) UpdatePassword(c *gin.Context) {
 }
 
 
-
-
-// @Security ApiKeyAuth
-// Login godoc
-// @Router 		/Login [PUT]
-// @Summary 	Login
-// @Description This api is login
-// @Tags 		Password
-// @Accept		json
-// @Produce		json
-// @Param		Password body models.GetPassword true "password"
-// @Success		200  {object}  models.GetPassword
-// @Failure		400  {object}  models.Response
-// @Failure		404  {object}  models.Response
-// @Failure		500  {object}  models.Response
-func (h Handler) Login(c *gin.Context) {
-	customer := models.GetPassword{}
-
-	if err := c.ShouldBindJSON(&customer); err != nil {
-		handleResponse(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
-		return
-	}
-
-	if err := check.ValidatePhone(customer.Phone); err != nil {
-		handleResponse(c, h.Log, "error while validating phone, phone: "+customer.Phone, http.StatusBadRequest,err.Error())
-		return
-	}
-
-	if err := check.ValidatePassword(customer.Password); err != nil {
-		handleResponse(c,h.Log,"error while validating  new password, new password: "+customer.Password, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	password, err := h.Services.Customer().GetPassword(context.Background(),customer.Phone)
-	if err != nil {
-		handleResponse(c, h.Log, "error while Login Customer", http.StatusBadRequest, err.Error())
-		return
-	}
-
-	err1:=hash.CompareHashAndPassword(password,customer.Password)
-	if err1 != nil {
-		handleResponse(c, h.Log, "Wrong Password", http.StatusBadRequest, err1.Error())
-		return
-	}
-
-	handleResponse(c, h.Log, "Login successfully", http.StatusOK, password)
-}

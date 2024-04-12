@@ -57,6 +57,7 @@ type GetAllCustomer struct{
 	CarsCount   int `json:"carscount"`
 	Order       GetOrder    `json:"order"`
 	Car         Car          `json:"car"`
+	Password        string  `json:"password,omitempty"`
 }
 type GetAllCustomerCars struct{
 	Id          string  `json:"id"`

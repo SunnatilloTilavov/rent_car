@@ -4,9 +4,11 @@ import (
 	"clone/rent_car_us/api/models"
 	"clone/rent_car_us/config"
 	"clone/rent_car_us/service"
+	"clone/rent_car_us/pkg/jwt"
 	"clone/rent_car_us/pkg/logger"
 	"fmt"
 	"strconv"
+	"errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -78,4 +80,27 @@ func ParseLimitQueryParam(c *gin.Context) (uint64, error) {
 		return 10, nil
 	}
 	return limit, nil
+}
+
+
+func getAuthInfo(c *gin.Context) (models.AuthInfo, error) {
+	accessToken := c.GetHeader("Authorization")
+	if accessToken == "" {
+		return models.AuthInfo{}, errors.New("unauthorized")
+	}
+
+	m, err := jwt.ExtractClaims(accessToken)
+	if err != nil {
+		return models.AuthInfo{}, err
+	}
+
+	role := m["user_role"].(string)
+	if !(role == config.ADMIN_ROLE || role == config.CUSTOMER_ROLE) {
+		return models.AuthInfo{}, errors.New("unauthorized")
+	}
+
+	return models.AuthInfo{
+		UserID:   m["user_id"].(string),
+		UserRole: role,
+	}, nil
 }

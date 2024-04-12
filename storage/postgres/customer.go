@@ -2,7 +2,7 @@ package postgres
 
 import (
 	"clone/rent_car_us/api/models"
-	"clone/rent_car_us/pkg"
+	// "clone/rent_car_us/pkg"
 	"context"
 	"database/sql"
 	"fmt"
@@ -43,7 +43,7 @@ func (c *customerRepo) Create(ctx context.Context, customer models.CreateCustome
 		id ,       
 		first_name,
 		last_name ,
-		gmail ,    
+		gmail,    
 		phone,
 		password     )
 		VALUES($1,$2,$3,$4,$5,$6) `
@@ -84,95 +84,95 @@ func (c *customerRepo) Update(ctx context.Context, customer models.GetCustomer) 
 func (c *customerRepo) GetAllCustomers(ctx context.Context, req models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error) {
 	var (
 		resp   = models.GetAllCustomersResponse{}
-		filter = ""
+		// filter = ""
 	)
-	offset := (req.Page - 1) * req.Limit
-	if req.Search != "" {
-		filter += fmt.Sprintf(` and first_name ILIKE '%%%v%%'`, req.Search)
-	}
+// 	offset := (req.Page - 1) * req.Limit
+// 	if req.Search != "" {
+// 		filter += fmt.Sprintf(` and first_name ILIKE '%%%v%%'`, req.Search)
+// 	}
 
-	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
-	fmt.Println("filter:", filter)
+// 	filter += fmt.Sprintf(" OFFSET %v LIMIT %v", offset, req.Limit)
+// 	fmt.Println("filter:", filter)
 
-	query := `SELECT
-    cu.id AS customer_id,
-    cu.first_name AS customer_first_name,
-    cu.last_name AS customer_last_name,
-    cu.gmail AS customer_gmail,
-    cu.phone AS customer_phone,
-    COUNT(o.id) AS order_count,
-    COUNT(ca.id) AS car_count,
-    cu.created_at,
-    cu.updated_at,
-    o.id AS order_id,
-    o.from_date,
-    o.to_date,
-    o.status,
-    o.paid,
-    o.amount
-FROM
-    customers cu
-JOIN
-    orders o ON cu.id = o.customer_id
-JOIN
-    cars ca ON ca.id = o.car_id
-GROUP BY
-    cu.id,
-    cu.first_name,
-    cu.last_name,
-    cu.gmail,
-    cu.phone,
-    cu.created_at,
-    cu.updated_at,
-    o.id,
-    o.from_date,
-    o.to_date,
-    o.status,
-    o.paid,
-    o.amount`
+// 	query := `SELECT
+//     cu.id AS customer_id,
+//     cu.first_name AS customer_first_name,
+//     cu.last_name AS customer_last_name,
+//     cu.gmail AS customer_gmail,
+//     cu.phone AS customer_phone,
+//     COUNT(o.id) AS order_count,
+//     COUNT(ca.id) AS car_count,
+//     cu.created_at,
+//     cu.updated_at,
+//     o.id AS order_id,
+//     o.from_date,
+//     o.to_date,
+//     o.status,
+//     o.paid,
+//     o.amount
+// FROM
+//     customers cu
+// JOIN
+//     orders o ON cu.id = o.customer_id
+// JOIN
+//     cars ca ON ca.id = o.car_id
+// GROUP BY
+//     cu.id,
+//     cu.first_name,
+//     cu.last_name,
+//     cu.gmail,
+//     cu.phone,
+//     cu.created_at,
+//     cu.updated_at,
+//     o.id,
+//     o.from_date,
+//     o.to_date,
+//     o.status,
+//     o.paid,
+//     o.amount`
 
-	rows, err := c.db.Query(ctx, query)
-	if err != nil {
-		return resp, err
-	}
-	defer rows.Close()
+// 	rows, err := c.db.Query(ctx, query)
+// 	if err != nil {
+// 		return resp, err
+// 	}
+// 	defer rows.Close()
 
-	for rows.Next() {
-		var (
-			customer = models.GetAllCustomer{
-				Order: models.GetOrder{},
-			}
-			updateAt sql.NullString
-		)
-		if err := rows.Scan(
-			&customer.Id,
-			&customer.FirstName,
-			&customer.LastName,
-			&customer.Gmail,
-			&customer.Phone,
-			&customer.OrderCount,
-			&customer.CarsCount,
-			&customer.CreatedAt,
-			&updateAt,
-			&customer.Order.Id,
-			&customer.Order.FromDate,
-			&customer.Order.ToDate,
-			&customer.Order.Status,
-			&customer.Order.Paid,
-			&customer.Order.Amount); err != nil {
-			return resp, err
-		}
-		customer.UpdatedAt = pkg.NullStringToString(updateAt)
-		resp.Customer = append(resp.Customer, customer)
-	}
-	if err = rows.Err(); err != nil {
-		return resp, err
-	}
-	countQuery := `Select count(*) from customers`
-	err = c.db.QueryRow(ctx, countQuery).Scan(&resp.Count)
-	if err != nil {
-		return resp, err
-	}
+// 	for rows.Next() {
+// 		var (
+// 			customer = models.GetAllCustomer{
+// 				Order: models.GetOrder{},
+// 			}
+// 			updateAt sql.NullString
+// 		)
+// 		if err := rows.Scan(
+// 			&customer.Id,
+// 			&customer.FirstName,
+// 			&customer.LastName,
+// 			&customer.Gmail,
+// 			&customer.Phone,
+// 			&customer.OrderCount,
+// 			&customer.CarsCount,
+// 			&customer.CreatedAt,
+// 			&updateAt,
+// 			&customer.Order.Id,
+// 			&customer.Order.FromDate,
+// 			&customer.Order.ToDate,
+// 			&customer.Order.Status,
+// 			&customer.Order.Paid,
+// 			&customer.Order.Amount); err != nil {
+// 			return resp, err
+// 		}
+// 		customer.UpdatedAt = pkg.NullStringToString(updateAt)
+// 		resp.Customer = append(resp.Customer, customer)
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		return resp, err
+// 	}
+// 	countQuery := `Select count(*) from customers`
+// 	err = c.db.QueryRow(ctx, countQuery).Scan(&resp.Count)
+// 	if err != nil {
+// 		return resp, err
+// 	}
 	return resp, nil
 }
 
@@ -193,6 +193,7 @@ func (c *customerRepo) GetByID(ctx context.Context, id string) (models.GetCustom
 	}
 	return customer, nil
 }
+
 func (c *customerRepo) Delete(ctx context.Context, id string) error {
 
 	query := ` UPDATE customers set
@@ -311,6 +312,64 @@ func (c *customerRepo) GetPassword (ctx context.Context, phone string) (string, 
 
 	return hashedPass, nil
 }
+
+
+func (c *customerRepo) GetByLogin(ctx context.Context, login string) (models.GetAllCustomer, error) {
+	var (
+		firstname sql.NullString
+		lastname  sql.NullString
+		phone     sql.NullString
+		email     sql.NullString
+		createdat sql.NullString
+		updatedat sql.NullString
+	)
+
+	query := `SELECT 
+		id, 
+		first_name, 
+		last_name, 
+		phone,
+		gmail,
+		created_at, 
+		updated_at,
+		password
+		FROM customers WHERE phone = $1 AND deleted_at = 0`
+
+	row := c.db.QueryRow(ctx, query, login)
+
+	customer := models.GetAllCustomer{
+	}
+
+	err := row.Scan(
+		&customer.Id,
+		&firstname,
+		&lastname,
+		&phone,
+		&email,
+		&createdat,
+		&updatedat,
+		&customer.Password,
+	)
+
+	if err != nil {
+		// c.logger.Error("failed to scan customer by LOGIN from database", logger.Error(err))
+		return models.GetAllCustomer{}, err
+	}
+
+	customer.FirstName = firstname.String
+	customer.LastName = lastname.String
+	customer.Phone = phone.String
+	customer.Gmail = email.String
+	customer.CreatedAt = createdat.String
+	customer.UpdatedAt = updatedat.String
+
+	fmt.Println(customer)
+
+	return customer, nil
+
+
+}
+
 
 
 

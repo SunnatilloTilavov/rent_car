@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 	"regexp"
+	// "clone/rent_car_us/config"
 )
 
 func ValidateCarYear(year int) error {
@@ -16,7 +17,7 @@ func ValidateCarYear(year int) error {
 
 	
 	func ValidateEmail(email string) error {
-		emailRegex := `^[a-zA-Z0-9._%+-]+@(?:[a-zA-Z0-9-]+\.)+(?:com|ru)$`
+		emailRegex := `^[a-zA-Z0-9._%+-]+@(?:gmail|email)+(?:com|ru)$`
 		regex := regexp.MustCompile(emailRegex)
 		if regex.MatchString(email) {
 			return nil
@@ -30,10 +31,13 @@ func ValidateCarYear(year int) error {
 	func ValidatePassword(password string) error {
 		lowercaseRegex := `[a-z]`
 		hasLowercase, _ := regexp.MatchString(lowercaseRegex, password)
+		
 		uppercaseRegex := `[A-Z]`
 		hasUppercase, _ := regexp.MatchString(uppercaseRegex, password)
+
 		digitRegex := `[0-9]`
 		hasDigit, _ := regexp.MatchString(digitRegex, password)
+		
 		symbolRegex := `[!@#$%^&*()-_+=~\[\]{}|\\:;"'<>,.?\/]`
 		hasSymbol, _ := regexp.MatchString(symbolRegex, password)
 	
@@ -60,3 +64,16 @@ func ValidateCarYear(year int) error {
 		}
 	}
 	
+	var ORDER_STATUS = []string{
+		"new", "in-process", "finished", "canceled",
+	}
+
+
+	func CheckOrderStatus(status string) error {
+		for i:=0;i<4;i++ {
+			if ORDER_STATUS[i] == status {
+				return nil
+			}
+		}
+		return errors.New("error: Invalid order status")
+	}

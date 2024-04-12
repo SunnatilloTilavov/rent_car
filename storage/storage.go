@@ -29,7 +29,7 @@ type ICustomerStorage interface {
 	Delete(context.Context,string) error
 	GetPassword(ctx context.Context, phone string) (string, error)
 	UpdatePassword(context.Context,models.PasswordCustomer) (string, error)
-
+	GetByLogin(context.Context, string) (models.GetAllCustomer, error)
 	///GetCustomer(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
 
 }
@@ -40,4 +40,6 @@ type IOrderStorage interface {
 	GetOne(context.Context,string) (models.GetOrder, error)
 	GetAll(context.Context,models.GetAllOrdersRequest) (models.GetAllOrdersResponse, error)
 	DeleteOrder(context.Context,string) error
+
+	UpdateOrderStatus(context.Context,models.GetOrder) (string, error)
 }

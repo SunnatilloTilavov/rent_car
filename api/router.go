@@ -3,8 +3,8 @@ package api
 import (
 	"clone/rent_car_us/api/handler"
 	"clone/rent_car_us/service"
-	"errors"
-	"net/http"
+	// "errors"
+	// "net/http"
 	"clone/rent_car_us/pkg/logger"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -22,11 +22,11 @@ func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
 	h := handler.NewStrg(services,log)
 
 	r := gin.Default()
-
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Use(authMiddleware)
+	// r.Use(authMiddleware)
 	// r.Use(authMiddleware1)
+	r.POST("/customer/login", h.CustomerLogin)
 
 	r.POST("/car", h.CreateCar)
 	r.GET("/car/:id", h.GetByIDCar)
@@ -37,7 +37,7 @@ func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
 	r.PUT("/car/:id", h.UpdateCar)
 	r.DELETE("/car/:id", h.DeleteCar)
 
-	r.PUT("/customer/password", h.UpdatePassword)
+	r.PATCH("/customer/password", h.UpdatePassword)
 
 	r.POST("/customer", h.CreateCustomer)
 	r.GET("/customer/:id", h.GetByIDCustomer)
@@ -51,19 +51,20 @@ func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
 	r.GET("/order", h.GetAllOrders)
 	r.PUT("/order/:id", h.UpdateOrder)
 	r.DELETE("/order/:id", h.DeleteOrder)
+	r.PATCH("/order/status/:id", h.UpdateOrderStatus)
 
 
 
 	return r
 }
 
-func authMiddleware(c *gin.Context) {
-	auth := c.GetHeader("Authorization")
-	if auth == "" {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("unauthorized"))
-	}
-	c.Next()
-}
+// func authMiddleware(c *gin.Context) {
+// 	auth := c.GetHeader("Authorization")
+// 	if auth == "" {
+// 		c.AbortWithError(http.StatusUnauthorized, errors.New("unauthorized"))
+// 	}
+// 	c.Next()
+// }
 
 // func authMiddleware1(c *gin.Context) {
 // 	for char1, char := range c.Request.Header() {
