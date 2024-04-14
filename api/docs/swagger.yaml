@@ -72,6 +72,11 @@ definitions:
       refresh_token:
         type: string
     type: object
+  models.CustomerRegisterRequest:
+    properties:
+      mail:
+        type: string
+    type: object
   models.GetAllCustomerCarsRequest:
     properties:
       id:
@@ -121,6 +126,23 @@ definitions:
       to_date:
         type: string
       updated_at:
+        type: string
+    type: object
+  models.LoginCustomer:
+    properties:
+      first_name:
+        type: string
+      gmail:
+        type: string
+      gmailcode:
+        type: string
+      last_name:
+        type: string
+      login:
+        type: string
+      password:
+        type: string
+      phone:
         type: string
     type: object
   models.PasswordCustomer:
@@ -561,6 +583,40 @@ paths:
       summary: update a customer
       tags:
       - customer
+  /customer/auth/create:
+    post:
+      consumes:
+      - application/json
+      description: Customer password check and create
+      parameters:
+      - description: login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginCustomer'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.LoginCustomer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Customer password check and create
+      tags:
+      - auth
   /customer/login:
     post:
       consumes:
@@ -631,6 +687,40 @@ paths:
       summary: update password
       tags:
       - Password
+  /customer/register:
+    post:
+      consumes:
+      - application/json
+      description: Customer register
+      parameters:
+      - description: register
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/models.CustomerRegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Customer register
+      tags:
+      - auth
   /customercars:
     get:
       consumes:

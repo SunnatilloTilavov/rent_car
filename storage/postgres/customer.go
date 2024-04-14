@@ -56,8 +56,18 @@ func (c *customerRepo) Create(ctx context.Context, customer models.CreateCustome
 		return "", err
 	}
 
+	
+
 	return id.String(), nil
 }
+
+
+
+
+
+
+
+
 
 func (c *customerRepo) Update(ctx context.Context, customer models.GetCustomer) (string, error) {
 
@@ -267,6 +277,7 @@ func (c *customerRepo) GetAllCustomerCars(ctx context.Context, req models.GetAll
 
 
 func (c *customerRepo) UpdatePassword(ctx context.Context, customer models.PasswordCustomer) (string, error) {
+
 	hashedNewPassword, err := bcrypt.GenerateFromPassword([]byte(customer.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return "", errors.New("error hashing new password")

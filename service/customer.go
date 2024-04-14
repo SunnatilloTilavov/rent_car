@@ -5,19 +5,22 @@ import (
 	"clone/rent_car_us/storage"
 	"context"
 	"clone/rent_car_us/pkg/logger"
+	"errors"
 
 )
 
 type CustomerService struct {
 	storage storage.IStorage
 	logger  logger.ILogger
+	redis   storage.IRedisStorage
 }
 
 
-func NewCustomerService(storage storage.IStorage,logger logger.ILogger) CustomerService {
+func NewCustomerService(storage storage.IStorage,logger logger.ILogger,redis storage.IRedisStorage) CustomerService {
 	return CustomerService{
 		storage: storage,
 		logger:  logger,
+		redis:   redis,
 	}
 }
 func (u CustomerService) Create(ctx context.Context, Customer models.CreateCustomer) (string, error) {
@@ -38,6 +41,12 @@ func (u CustomerService) Update(ctx context.Context, Customer models.GetCustomer
 		u.logger.Error("ERROR in service layer while updating Customer", logger.Error(err))
 		return "", err
 	}
+	
+	err = u.redis.Del(ctx, Customer.Id)
+	if err != nil {
+		u.logger.Error("error while setting otpCode to redis customer update", logger.Error(err))
+		return "error redis update",err
+	}
 
 	return pKey, nil
 }
@@ -47,6 +56,12 @@ func (u CustomerService) Delete(ctx context.Context, id string) error {
 	err := u.storage.Customer().Delete(ctx, id)
 	if err != nil {
 		u.logger.Error("error service delete Customer", logger.Error(err))
+		return err
+	}
+
+	err = u.redis.Del(ctx, id)
+	if err != nil {
+		u.logger.Error("error while setting otpCode to redis customer deleted", logger.Error(err))
 		return err
 	}
 
@@ -106,6 +121,34 @@ func (u CustomerService) GetPassword(ctx context.Context, phone string) (string,
 
 	return pKey, nil
 }
+
+
+
+
+
+func (u CustomerService) CustomerRegisterCreate(ctx context.Context, customer models.LoginCustomer) (string, error) {
+
+    OTPCODE := u.storage.Redis().Get(ctx, customer.Gmail)
+    OTPCODEStr, ok := OTPCODE.(string)
+    if !ok {
+        u.logger.Error("error in service layer while creating customer", logger.Error(errors.New("failed to convert OTP code to string")))
+        return "the code did not match", errors.New("failed to convert OTP code to string")
+    }
+
+    if OTPCODEStr != customer.GmailCode {
+        u.logger.Error("error in service layer while creating customer", logger.Error(errors.New("the code you entered is not the same as the code sent to your gmail address")))
+        return "the code did not match", errors.New("the code you entered is not the same as the code sent to your gmail address")
+    }
+
+    pKey, err := u.storage.Customer().CustomerRegisterCreate(ctx, customer)
+    if err != nil {
+        u.logger.Error("error in service layer while creating customer", logger.Error(err))
+        return "", err
+    }
+
+    return pKey, nil
+}
+
 
 
 

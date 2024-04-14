@@ -27,6 +27,9 @@ func New(services service.IServiceManager, log logger.ILogger) *gin.Engine {
 	// r.Use(authMiddleware)
 	// r.Use(authMiddleware1)
 	r.POST("/customer/login", h.CustomerLogin)
+	r.POST("/customer/register", h.CustomerRegister)
+	r.POST("/customer/auth/create", h.CustomerRegisterCreate)
+
 
 	r.POST("/car", h.CreateCar)
 	r.GET("/car/:id", h.GetByIDCar)

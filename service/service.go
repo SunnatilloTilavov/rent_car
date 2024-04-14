@@ -20,13 +20,13 @@ type Service struct {
 	auth            authService
 }
 
-func New(storage storage.IStorage,log logger.ILogger) Service {
+func New(storage storage.IStorage,log logger.ILogger, redis storage.IRedisStorage) Service {
 	services := Service{}
 	services.carService = NewCarService(storage,log)
-	services.CustomerService = NewCustomerService(storage,log)
+	services.CustomerService = NewCustomerService(storage,log,redis)
 	services.OrderService = NewOrderService(storage,log)
 	services.logger=log
-	services.auth=NewAuthService(storage, log)
+	services.auth=NewAuthService(storage, log, redis)
 
 	return services
 }

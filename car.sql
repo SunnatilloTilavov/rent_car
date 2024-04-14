@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS customers (
 )
 
 
+
 CREATE UNIQUE INDEX index_phone
 ON Customers(phone,deleted_at);
 
@@ -34,8 +35,8 @@ CREATE TABLE orders (
   "id" uuid PRIMARY KEY,
   "customer_id" uuid REFERENCES customers(id),
   "car_id" uuid REFERENCES cars(id),
-  "from_date" TIMESTAMP,
-  "to_date" TIMESTAMP,
+  "from_date" TIMESTAMP, String
+  "to_date" TIMESTAMP,  String
   "status" varchar(50),
   "paid" BOOLEAN DEFAULT true,
   "amount" DECIMAL(10,2),

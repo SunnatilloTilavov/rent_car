@@ -4,8 +4,12 @@ import (
 	"errors"
 	"time"
 	"regexp"
-	// "clone/rent_car_us/config"
+	"net/mail"
+	"encoding/json"
+	"fmt"
+	"net/http"
 )
+	// "clone/rent_car_us/config"
 
 func ValidateCarYear(year int) error {
 	if year <= 0 || year > time.Now().Year()+1 {
@@ -16,17 +20,65 @@ func ValidateCarYear(year int) error {
 
 
 	
-	func ValidateEmail(email string) error {
-		emailRegex := `^[a-zA-Z0-9._%+-]+@(?:gmail|email)+(?:com|ru)$`
-		regex := regexp.MustCompile(emailRegex)
-		if regex.MatchString(email) {
+	// func ValidateEmail(email string) error {
+	// 	emailRegex := `^[a-zA-Z0-9._%+-]+@(?:gmail|email)+(?:com|ru)$`
+	// 	regex := regexp.MustCompile(emailRegex)
+	// 	if regex.MatchString(email) {
+	// 		return nil
+	// 	} else {
+	// 		return errors.New("email is not valid")
+	// 	}
+	// }
+
+	func ValidateEmail(address string) (error) {
+		_, err := mail.ParseAddress(address)
+		if err != nil {
+			return  errors.New("email is not valid")
+			
+		}
+		return nil
+	}
+	
+	type EmailVerificationResponse struct {
+		Data struct {
+			Result string `json:"result"`
+		} `json:"data"`
+	}
+	
+	func CheckEmail(email string) (error) {
+		apiKey := "a78afa97d76af0e3364a3eb68ed12aae83e247a0"       
+	
+		url := fmt.Sprintf("https://api.hunter.io/v2/email-verifier?email=%s&api_key=%s", email, apiKey)
+		resp, err := http.Get(url)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return err
+		}
+		defer resp.Body.Close()
+	
+		var verificationResponse EmailVerificationResponse
+		err = json.NewDecoder(resp.Body).Decode(&verificationResponse)
+		if err != nil {
+			fmt.Println("Error decoding JSON:", err)
+			return err
+		}
+
+
+		if verificationResponse.Data.Result == "undeliverable" {
+			fmt.Println("Email address does not exist or is undeliverable")
+			
+			return errors.New("Email address does not exist or is undeliverable")
+		} else if verificationResponse.Data.Result == "deliverable" {
+			fmt.Println("Email address is valid")
 			return nil
 		} else {
-			return errors.New("email is not valid")
-		}
-	}
+			fmt.Println("Unable to verify email address")
 
-	
+			return errors.New("Unable to verify email address")
+		}
+
+		return errors.New("Email address does not exist or is undeliverable")
+	}
 	
 	func ValidatePassword(password string) error {
 		lowercaseRegex := `[a-z]`

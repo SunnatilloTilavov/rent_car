@@ -5,6 +5,7 @@ import (
  "fmt"
  "clone/rent_car_us/config"
  "clone/rent_car_us/storage"
+ "clone/rent_car_us/storage/redis"
  "time"
 
  _ "github.com/lib/pq"
@@ -14,9 +15,11 @@ import (
 
 type Store struct {
  Pool *pgxpool.Pool
+ cfg    config.Config
+redis  storage.IRedisStorage
 }
 
-func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
+func New(ctx context.Context, cfg config.Config,redis storage.IRedisStorage) (storage.IStorage, error) {
  url := fmt.Sprintf(`host=%s port=%v user=%s password=%s database=%s sslmode=disable`,
   cfg.PostgresHost, cfg.PostgresPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDatabase)
 
@@ -36,6 +39,8 @@ func New(ctx context.Context, cfg config.Config) (storage.IStorage, error) {
 
  return Store{
   Pool: newPool,
+  cfg:    cfg,
+  redis:  redis,
  }, nil
 }
 
@@ -60,3 +65,8 @@ func (s Store) Order() storage.IOrderStorage {
 
  return &NewOrder
 }
+
+func (s Store) Redis() storage.IRedisStorage {
+	return redis.New(s.cfg)
+}
+

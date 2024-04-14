@@ -3,12 +3,14 @@ package storage
 import (
 	"clone/rent_car_us/api/models"
 	"context"
+	"time"
 )
 type IStorage interface {
 	CloseDB()
 	Car() ICarStorage
 	Customer() ICustomerStorage
 	Order() IOrderStorage
+	Redis() IRedisStorage
 }
 
 type ICarStorage interface {
@@ -21,6 +23,9 @@ type ICarStorage interface {
 }
 
 type ICustomerStorage interface {
+
+	CustomerRegisterCreate(ctx context.Context, customer models.LoginCustomer) (string, error)
+
 	Create(context.Context,models.CreateCustomer) (string, error)
 	GetByID(context.Context,string) (models.GetCustomer, error)
 	GetAllCustomers(context.Context,models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
@@ -30,6 +35,7 @@ type ICustomerStorage interface {
 	GetPassword(ctx context.Context, phone string) (string, error)
 	UpdatePassword(context.Context,models.PasswordCustomer) (string, error)
 	GetByLogin(context.Context, string) (models.GetAllCustomer, error)
+	GetGmail (ctx context.Context, gmail string) (string, error)
 	///GetCustomer(request models.GetAllCustomersRequest) (models.GetAllCustomersResponse, error)
 
 }
@@ -42,4 +48,10 @@ type IOrderStorage interface {
 	DeleteOrder(context.Context,string) error
 
 	UpdateOrderStatus(context.Context,models.GetOrder) (string, error)
+}
+
+type IRedisStorage interface {
+	SetX(ctx context.Context, key string, value interface{}, duration time.Duration) error
+	Get(ctx context.Context, key string) interface{}
+	Del(ctx context.Context, key string) error
 }
